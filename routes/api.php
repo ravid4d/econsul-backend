@@ -21,3 +21,12 @@ Route::prefix('user')->group(function(){
 
     });
 });
+
+Route::get("/check",function(){
+    $database = DB::connection()->getDatabaseName();
+
+    return response()->json([
+        "database"=>$database,
+        "Hello"=>"world"
+    ]);
+});
