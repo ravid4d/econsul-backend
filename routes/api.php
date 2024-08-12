@@ -19,12 +19,13 @@ Route::prefix('user')->group(function(){
         Route::post('/spouse/form','spouseSubmit');
         Route::post('/child/form','childInfoSubmit');
 
+        Route::post('/applicant/photo','applicantPhotoSave');
+
     });
 });
 
 Route::get("/check",function(){
     $database = DB::connection()->getDatabaseName();
-
     return response()->json([
         "database"=>$database,
         "Hello"=>"world"

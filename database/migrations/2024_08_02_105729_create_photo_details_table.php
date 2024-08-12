@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('photo_owner')->nullable();
             $table->string('ephoto_link')->nullable();
             $table->string('image_url')->nullable();
+            $table->string('originalFileName')->nullable();
             $table->timestamps();
         });
     }
