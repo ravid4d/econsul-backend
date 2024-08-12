@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\ApiResponse;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{ApplicantDetail, SpouseDetail, ChildDetail};
+use App\Models\{ApplicantDetail, SpouseDetail, ChildDetail, PhotoDetail};
 
 class FormController extends Controller
 {
@@ -24,7 +24,7 @@ class FormController extends Controller
             $userId = 1;
             $form = ApplicantDetail::create(['user_id' => $userId, 'eligibility_status' => $request->eligibility]);
 
-            return ApiResponse::success('Form Submitted Successfully!', ["applicationId" => $form->id]);
+            return ApiResponse::success('Form Submitted Successfully!', ["applicationId" => $form->id, "created_at" => $form->created_at]);
 
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
@@ -193,6 +193,62 @@ class FormController extends Controller
 
             return ApiResponse::success('Spouse Detail submitted successfully!');
 
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage());
+        }
+    }
+    public function applicantPhotoSave(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'application_id' => 'required|exists:applicant_details,id',
+                'photos' => 'required|array',
+                'photos.*.photo_owner' => 'required|string'
+            ]);
+
+            if ($validator->fails()) {
+                return ApiResponse::error("Validation Error!", $validator->errors());
+            }
+
+            foreach ($request->photos as $index => $photo) {
+                $hasEphotoLink = array_key_exists('ephoto_link', $photo);
+                $hasImageUrl = $request->hasFile("photos.$index.image_url");
+
+                if (!$hasEphotoLink && !$hasImageUrl) {
+                    return response()->json(['error' => 'Either ephoto_link or image_url must be provided for each photo.'], 400);
+                }
+
+                if ($hasEphotoLink && $hasImageUrl) {
+                    return response()->json(['error' => 'Only one of ephoto_link or image_url can be provided for each photo.'], 400);
+                }
+
+                $originalFileName = null;
+                $imageUrl = null;
+                if ($hasImageUrl) {
+                    $originalFileName = $request->file("photos.$index.image_url")->getClientOriginalName();
+                    $imageUrl = $request->file("photos.$index.image_url")->store('photos', 'public');
+                }
+
+
+                PhotoDetail::create([
+                    'applicant_detail_id' => $request->application_id,
+                    'photo_owner' => $photo['photo_owner'],
+                    'ephoto_link' => $hasEphotoLink ? $photo['ephoto_link'] : null,
+                    'image_url' => $imageUrl,
+                    'originalFileName' => $originalFileName
+                ]);
+            }
+
+
+            return ApiResponse::success('Spouse Detail submitted successfully!');
+
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage());
+        }
+    }
+    public function finalSubmission(Request $request)
+    {
+        try {
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
         }

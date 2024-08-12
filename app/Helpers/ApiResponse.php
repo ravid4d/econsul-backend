@@ -10,7 +10,7 @@ class ApiResponse
             'message' => $message,
             'data' => $data,
             'status_code' => $code
-        ]);
+        ],$code);
     }
     public static function error($message,$data = null,$code = 400)
     {
@@ -19,7 +19,7 @@ class ApiResponse
             'message' => $message,
             'data'=>$data,
             'status_code'=>$code
-        ]);
+        ],$code);
     }
     public static function sessionError($message,$data = null,$code = 404)
     {
@@ -28,6 +28,6 @@ class ApiResponse
             'message'=>$message,
             'data'=>$data,
             'status_code'=>$code
-        ]);
+        ],$code);
     }
 }

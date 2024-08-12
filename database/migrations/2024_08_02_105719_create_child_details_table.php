@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('child_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('applicant_detail_id')->constrained()->onDelete('cascade');
-            $table->string('name')->nullable();
+            $table->string('first_name')->nullable();
             $table->string('middle_name')->nullable();
+            $table->string('surname')->nullable();
             $table->date('birth_date')->nullable();
+            $table->enum('gender',['Male','Female'])->nullable();
             $table->string('country')->nullable();
             $table->string('city')->nullable();
             $table->timestamps();
