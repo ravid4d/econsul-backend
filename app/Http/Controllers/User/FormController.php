@@ -212,21 +212,21 @@ class FormController extends Controller
 
             foreach ($request->photos as $index => $photo) {
                 $hasEphotoLink = array_key_exists('ephoto_link', $photo);
-                $hasImageUrl = $request->hasFile("photos.$index.image_url");
+                $hasImageUrl = $request->hasFile("photos.$index.image");
 
                 if (!$hasEphotoLink && !$hasImageUrl) {
-                    return response()->json(['error' => 'Either ephoto_link or image_url must be provided for each photo.'], 400);
+                    return ApiResponse::error('Either ephoto_link or image must be provided for each photo.');
                 }
 
                 if ($hasEphotoLink && $hasImageUrl) {
-                    return response()->json(['error' => 'Only one of ephoto_link or image_url can be provided for each photo.'], 400);
+                    return ApiResponse::error('Only one of ephoto_link or image can be provided for each photo.');
                 }
 
                 $originalFileName = null;
                 $imageUrl = null;
                 if ($hasImageUrl) {
-                    $originalFileName = $request->file("photos.$index.image_url")->getClientOriginalName();
-                    $imageUrl = $request->file("photos.$index.image_url")->store('photos', 'public');
+                    $originalFileName = $request->file("photos.$index.image")->getClientOriginalName();
+                    $imageUrl = $request->file("photos.$index.image")->store('photos', 'public');
                 }
 
 
@@ -249,6 +249,7 @@ class FormController extends Controller
     public function finalSubmission(Request $request)
     {
         try {
+
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
         }
