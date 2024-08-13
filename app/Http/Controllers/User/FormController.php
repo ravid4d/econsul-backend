@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\ApiResponse;
 use Illuminate\Support\Facades\Validator;
-use App\Models\{ApplicantDetail, SpouseDetail, ChildDetail, PhotoDetail};
+use App\Models\{ApplicantDetail, SpouseDetail, ChildDetail, PhotoDetail, FormStatus};
 
 class FormController extends Controller
 {
@@ -249,7 +249,15 @@ class FormController extends Controller
     public function finalSubmission(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'application_id' => 'required|exists:applicant_details,id'
+            ]);
 
+            if ($validator->fails()) {
+                return ApiResponse::error("Validation Error!", $validator->errors());
+            }
+            FormStatus::create(["applicant_detail_id"=>$request->application_id,"status"=>"submit"]);
+            return ApiResponse::success('Form is submitted successfully!');
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
         }

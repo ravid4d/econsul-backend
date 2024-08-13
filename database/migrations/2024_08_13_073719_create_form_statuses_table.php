@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('confirms', function (Blueprint $table) {
+        Schema::create('form_statuses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('applicant_detail_id')->unique()->constrained()->onDelete('cascade');
-            $table->enum('status',["submit"]);
+            $table->enum('status',["submit","underprocess"]);
             $table->string("confirmation_no")->nullable();
             $table->string("digital_sign")->nullable();
             $table->timestamps();
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('confirms');
+        Schema::dropIfExists('form_statuses');
     }
 };

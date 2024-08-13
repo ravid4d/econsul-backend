@@ -21,6 +21,8 @@ Route::prefix('user')->group(function(){
 
         Route::post('/applicant/photo','applicantPhotoSave');
 
+        Route::post('/final/submit','finalSubmission');
+
     });
 });
 
