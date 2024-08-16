@@ -20,4 +20,10 @@ class ApplicantDetail extends Model
     ];
 
     protected $casts = ["eligibility_status" => 'array',"personal_info"=>'array',"contact_info"=>'array',"spouse_info"=>'array'];
+  
+    public function formStatuses()
+    {
+        return $this->hasMany(FormStatus::class);
+    }
+
 }

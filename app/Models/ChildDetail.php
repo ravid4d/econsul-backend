@@ -11,8 +11,10 @@ class ChildDetail extends Model
 
     protected $fillable = [
         'applicant_detail_id',
-        'name',
+        'first_name',
         'middle_name',
+        'surname',
+        'gender',
         'birth_date',
         'country',
         'city'
