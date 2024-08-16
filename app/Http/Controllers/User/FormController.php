@@ -141,7 +141,8 @@ class FormController extends Controller
             $validator = Validator::make($request->all(), [
                 'application_id' => 'required',
                 'first_name' => 'required',
-                'middle_name' => 'required',
+                'surname'=> 'required',
+                'gender'=> 'required',
                 'birth_date' => 'required',
                 'country' => 'required',
                 'city' => 'required',
@@ -150,14 +151,19 @@ class FormController extends Controller
             if ($validator->fails()) {
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
-            SpouseDetail::create([
-                'applicant_detail_id' => $request->application_id,
-                'name' => $request->first_name,
-                'middle_name' => $request->middle_name,
-                'birth_date' => $request->birth_date,
-                'country' => $request->country,
-                'city' => $request->city
-            ]);
+           
+            $spouseDetail = SpouseDetail::updateOrCreate(
+                ['applicant_detail_id' => $request->application_id], // Search criteria
+                [
+                    'first_name' => $request->first_name,
+                    'middle_name' => $request->middle_name,
+                    'surname' => $request->surname,
+                    'gender' => $request->gender,
+                    'birth_date' => $request->birth_date,
+                    'country' => $request->country,
+                    'city' => $request->city
+                ]
+            );
 
 
             return ApiResponse::success('Spouse Detail submitted successfully!');
@@ -172,7 +178,8 @@ class FormController extends Controller
             $validator = Validator::make($request->all(), [
                 'application_id' => 'required',
                 'first_name' => 'required',
-                'middle_name' => 'required',
+                'surname'=>'required',
+                'gender'=> 'required',
                 'birth_date' => 'required',
                 'country' => 'required',
                 'city' => 'required',
@@ -183,8 +190,10 @@ class FormController extends Controller
             }
             ChildDetail::create([
                 'applicant_detail_id' => $request->application_id,
-                'name' => $request->first_name,
+                'first_name' => $request->first_name,
                 'middle_name' => $request->middle_name,
+                'surname' => $request->surname,
+                'gender' => $request->gender,
                 'birth_date' => $request->birth_date,
                 'country' => $request->country,
                 'city' => $request->city
