@@ -12,7 +12,8 @@ class DeleteFormController extends Controller
     public function applicantdelete($id)
     {
         try {
-            $applicantDetail = ApplicantDetail::with('formStatuses')->findOrFail($id);
+            // return "yess";
+            $applicantDetail = ApplicantDetail::with('formStatus')->findOrFail($id);
             $applicantDetail->delete();
             return ApiResponse::success('Record deleted successfully');
         } catch (\Exception $e) {

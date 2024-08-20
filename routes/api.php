@@ -11,9 +11,10 @@ Route::prefix('user')->group(function () {
 
     Route::controller(App\Http\Controllers\User\DashboardController::class)->group(function () {
 
-        Route::get('/dashboard', 'index');
-        Route::get('/applicant-details/pdf','dashboardPDF');
-        Route::get('/applicant-details/{id}/pdf','dashboardPDF');
+        Route::post('/dashboard', 'index');  
+        Route::get('/applicant/{id}/dashboard', 'ApplicantDetailDashboard');
+        Route::post('/applicant-details/pdf','idDashboardPDF');
+     
 
     });
 
@@ -55,7 +56,7 @@ Route::prefix('user')->group(function () {
 
     Route::controller(App\Http\Controllers\User\DeleteFormController::class)->group(function () {
 
-        Route::delete('/applicant/{id}/detele','applicantdelete');
+        Route::delete('/applicant/{id}/delete','applicantdelete');
 
     });
 

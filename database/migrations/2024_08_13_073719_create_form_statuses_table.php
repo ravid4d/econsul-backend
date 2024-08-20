@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('form_statuses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('applicant_detail_id')->unique()->constrained()->onDelete('cascade');
-            $table->enum('status',["submit","underprocess"]);
+            $table->enum('status',["inprogress","submitting","confirmed"]);
             $table->string("confirmation_no")->nullable();
             $table->string("digital_sign")->nullable();
             $table->timestamps();
