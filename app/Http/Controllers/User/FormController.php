@@ -174,9 +174,10 @@ class FormController extends Controller
     }
     public function childInfoSubmit(Request $request)
     {
+        // return $request->all();
         try {
             $validator = Validator::make($request->all(), [
-                'application_id' => 'required',
+                'applicant_detail_id' => 'required',
                 'first_name' => 'required',
                 'surname'=>'required',
                 'gender'=> 'required',
@@ -189,7 +190,7 @@ class FormController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
             ChildDetail::create([
-                'applicant_detail_id' => $request->application_id,
+                'applicant_detail_id' => $request->applicant_detail_id,
                 'first_name' => $request->first_name,
                 'middle_name' => $request->middle_name,
                 'surname' => $request->surname,
