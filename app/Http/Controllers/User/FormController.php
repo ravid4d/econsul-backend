@@ -22,8 +22,8 @@ class FormController extends Controller
             }
             // $userId = $request->user()->id;
             $userId = 1;
-            $form = ApplicantDetail::create(['user_id' => $userId, 'eligibility_status' => $request->eligibility]);
-
+            $form = ApplicantDetail::create(['user_id' => $userId, 'eligibility_status' => $request->eligibility]);    
+            FormStatus::create(["applicant_detail_id"=>$form->id,"status"=>"inprogress"]);
             return ApiResponse::success('Form Submitted Successfully!', ["applicationId" => $form->id, "created_at" => $form->created_at]);
 
         } catch (\Exception $e) {
@@ -200,7 +200,7 @@ class FormController extends Controller
             ]);
 
 
-            return ApiResponse::success('Spouse Detail submitted successfully!');
+            return ApiResponse::success('Child Detail submitted successfully!');
 
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
@@ -265,7 +265,7 @@ class FormController extends Controller
             if ($validator->fails()) {
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
-            FormStatus::create(["applicant_detail_id"=>$request->application_id,"status"=>"submit"]);
+            FormStatus::create(["applicant_detail_id"=>$request->application_id,"status"=>"submitting"]);
             return ApiResponse::success('Form is submitted successfully!');
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());

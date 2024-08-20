@@ -60,7 +60,7 @@ class GetFormController extends Controller
         return ApiResponse::success('Data retrieved successfully', $spouseDetail);
 
     }
-    public function childDetail(Request $request)
+    public function childDetail()
     {
         try {
           
@@ -70,6 +70,8 @@ class GetFormController extends Controller
             return ApiResponse::success('Data retrieved successfully', $childDetail);
 
         } catch (\Exception $e) {
+            \Log::error('Error retrieving child details: ' . $e->getMessage());
+
             // Return an error response if something goes wrong
             return ApiResponse::error($e->getMessage());
         }
