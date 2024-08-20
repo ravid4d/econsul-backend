@@ -37,11 +37,8 @@ class DashboardController extends Controller
             if (in_array($sortBy, $validSortColumns)) {
                 if ($sortBy == 'name') {
                     $query->orderByRaw("JSON_EXTRACT(personal_info, '$.first_name') {$sortOrder}, JSON_EXTRACT(personal_info, '$.middle_name') {$sortOrder}, JSON_EXTRACT(personal_info, '$.last_name') {$sortOrder}"); $query->orderByRaw("JSON_EXTRACT(personal_info, '$.first_name') {$sortOrder}, JSON_EXTRACT(personal_info, '$.middle_name') {$sortOrder}, JSON_EXTRACT(personal_info, '$.last_name') {$sortOrder}");
-                } elseif ($sortBy == 'status') {
-                    $applicants = $query->get();
-                    $applicants = $applicants->sortBy(function($applicant) {
-                        return $applicant->formStatus->status ?? ''; // Return empty string if status is null
-                    }, SORT_REGULAR, $sortOrder === 'desc'); 
+                } elseif ($sortBy === 'status') {
+                    $query->orderBy('form_status.status', $sortOrder);
                 } elseif (in_array($sortBy, ['updated_at'])) {
                     // Sorting by 'updated_at'
                     $query->orderBy($sortBy, $sortOrder);
