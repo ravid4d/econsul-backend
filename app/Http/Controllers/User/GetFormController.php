@@ -76,15 +76,22 @@ class GetFormController extends Controller
             return ApiResponse::error($e->getMessage());
         }
     }
-
-    public function showChildDetail($id)
+    public function applicantPhoto($id)
     {
+        try {
+          
+            $photoDetail= PhotoDetail::where("applicant_detail_id",$id)->get();
 
-        $childDetail = ChildDetail::where('applicant_detail_id', $id)->get();
-        if (!$childDetail) {
-            return response()->json(['message' => 'Applicant not found'], 404);
+            // Return a success response with the data
+            return ApiResponse::success('Data retrieved successfully', $photoDetail);
+
+        } catch (\Exception $e) {
+            \Log::error('Error retrieving child details: ' . $e->getMessage());
+
+            // Return an error response if something goes wrong
+            return ApiResponse::error($e->getMessage());
         }
-
-        return response()->json($childDetail);
     }
+
+   
 }

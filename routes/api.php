@@ -18,6 +18,7 @@ Route::prefix('user')->group(function () {
     Route::controller(App\Http\Controllers\User\DashboardController::class)->group(function () {
 
         Route::post('/dashboard', 'index');  
+        Route::get('/applicant/year', 'ApplicantYear');
         Route::get('/applicant/{id}/dashboard', 'ApplicantDetailDashboard');
         Route::post('/applicant-details/pdf','idDashboardPDF');
      
@@ -35,7 +36,7 @@ Route::prefix('user')->group(function () {
         Route::post('/spouse/form', 'spouseSubmit');
         Route::post('/child/form', 'childInfoSubmit');
 
-        Route::post('/applicant/photo', 'applicantPhotoSave');
+        Route::post('/applicant/photo', 'photoUpdate');
 
         Route::post('/final/submit', 'finalSubmission');
     });
@@ -46,23 +47,17 @@ Route::prefix('user')->group(function () {
         Route::get('/{id}/spouse/show', 'showSpouseDetail');
         Route::get('/child/detail', 'childDetail');
         Route::get('/{id}/child/show', 'showChildDetail');
+        Route::get('/applicant/{id}/photo', 'applicantPhoto');
     });
 
     Route::controller(App\Http\Controllers\User\PutFormController::class)->group(function () {
-
-        Route::put('/eligibility', 'eligibilitySubmit');
-        Route::put('/education', 'education_level');
-        Route::put('/personal-info', 'personal_info');
-        Route::put('/contact-info', 'contact_info');
-        Route::put('/spouse-info', 'spouse_info');
-        Route::put('/children-info', 'children_info');
-        Route::put('/spouse-submit', 'spouseSubmit');
-        Route::put('/child-submit', 'childInfoSubmit');
+        Route::put('/childinfo/update', 'childInfoUpdate');
     });
 
     Route::controller(App\Http\Controllers\User\DeleteFormController::class)->group(function () {
 
         Route::delete('/applicant/{id}/delete','applicantdelete');
+        Route::delete('/applicant/{id}/photo','applicantPhotoDelete');
 
     });
 
