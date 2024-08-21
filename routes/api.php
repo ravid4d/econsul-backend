@@ -9,6 +9,8 @@ Route::get('/user', function (Request $request) {
 
 Route::controller(App\Http\Controllers\AuthController::class)->group(function (){
     Route::post('/google/login','handleGoogleCallback');
+    Route::post('/login/otp','loginWithOtp');
+    Route::post('/login/verify-otp','verifyOtp');
 });
 Route::prefix('user')->group(function () {
 
