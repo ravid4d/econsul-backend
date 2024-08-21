@@ -11,6 +11,7 @@ Route::controller(App\Http\Controllers\AuthController::class)->group(function ()
     Route::post('/google/login','handleGoogleCallback');
     Route::post('/login/otp','loginWithOtp');
     Route::post('/login/verify-otp','verifyOtp');
+    Route::post('/logout','logout');
 });
 Route::prefix('user')->group(function () {
 

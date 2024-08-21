@@ -109,12 +109,12 @@ class AuthController extends Controller
 
             if (!$user || $user->otp_code !== $request->input('otp')) {
                 // return response()->json(['message' => 'Invalid OTP.'], 401);
-                return ApiResponse::error('Invalid OTP.',[],401);
+                return ApiResponse::error('Invalid OTP.', [], 401);
             }
 
             if (now()->greaterThan($user->otp_expires_at)) {
                 // return response()->json(['message' => 'OTP has expired.'], 401);
-                return ApiResponse::error('OTP has expired.',[],401);
+                return ApiResponse::error('OTP has expired.', [], 401);
             }
 
             // OTP is valid, proceed with login
@@ -126,11 +126,18 @@ class AuthController extends Controller
             $user->save();
 
             // return response()->json(['token' => $token]);
-            return ApiResponse::success("Logged in Successfully!",['authToken'=>$token,'name'=>$user->name . " " . $user->surname,'email'=>$user->email]);
+            return ApiResponse::success("Logged in Successfully!", ['authToken' => $token, 'name' => $user->name . " " . $user->surname, 'email' => $user->email]);
 
 
         } catch (\Exception $e) {
             return ApiResponse::error("Invalid token or Google authentication failed.", ["error_msg" => $e->getMessage()]);
         }
+    }
+    public function logout(Request $request)
+    {
+        // Revoke the token that was used to authenticate the current request
+        $request->user()->currentAccessToken()->delete();
+
+        return ApiResponse::success('Successfully logged out');
     }
 }
