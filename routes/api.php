@@ -7,6 +7,9 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::controller(App\Http\Controllers\AuthController::class)->group(function (){
+    Route::post('/google/login','handleGoogleCallback');
+});
 Route::prefix('user')->group(function () {
 
     Route::controller(App\Http\Controllers\User\DashboardController::class)->group(function () {
