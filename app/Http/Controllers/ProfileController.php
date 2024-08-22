@@ -84,7 +84,7 @@ class ProfileController extends Controller
             // $code = rand(100000, 999999);
 
             $code = '111111';
-            $email = $request->email;
+            // $email = $request->email;
             VerifyEmailCode::updateOrCreate(
                 ["user_id"=>$request->user()->id,"email"=>$request->email],
                 ["code"=>$code,"otp_expires_at"=>now()->addMinutes(10)]);
@@ -142,9 +142,8 @@ class ProfileController extends Controller
             }
 
             // $code = rand(100000, 999999);
-
             $code = '111111';
-            $email = $request->email;
+            $mobile_number = $request->mobile_number;
             VerifyEmailCode::updateOrCreate(
                 ["user_id"=>$request->user()->id,"email"=>$request->email],
                 ["code"=>$code,"otp_expires_at"=>now()->addMinutes(10)]);

@@ -25,8 +25,11 @@ class AuthController extends Controller
                 $token = $existingUser->createToken('remember_token')->plainTextToken;
 
                 $data['authToken'] = $token;
-                $data['name'] = $existingUser->name . " " . $existingUser->surname;
+                $data['name'] = $existingUser->name;
+                $data['surname'] = $existingUser->surname;
                 $data['email'] = $existingUser->email;
+                $data['profile_picture'] = $existingUser->profile_picture;
+                $data['mobile_number'] = $existingUser->mobile_number;
             } else {
                 // Create a new user
                 $newUser = User::create([
