@@ -60,6 +60,12 @@ Route::prefix('user')->group(function () {
         Route::delete('/applicant/{id}/photo','applicantPhotoDelete');
 
     });
+    Route::controller(App\Http\Controllers\ProfileController::class)->group(function(){
+        Route::post('/profile-picture','profilePhotoUpdate')->middleware('auth:sanctum');
+        Route::post('/profile','profileUpdate')->middleware('auth:sanctum');
+        Route::post('/send-email-verification-code','sendEmailVerificationCode')->middleware('auth:sanctum');
+        Route::post('/verify-email', 'verifyEmail')->middleware('auth:sanctum');
+    });
 
     Route::get("/check", function () {
         $database = DB::connection()->getDatabaseName();
