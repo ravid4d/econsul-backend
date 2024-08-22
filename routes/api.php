@@ -7,21 +7,21 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::controller(App\Http\Controllers\AuthController::class)->group(function (){
-    Route::post('/google/login','handleGoogleCallback');
-    Route::post('/login/otp','loginWithOtp');
-    Route::post('/login/verify-otp','verifyOtp');
-    Route::post('/logout','logout')->middleware('auth:sanctum');
+Route::controller(App\Http\Controllers\AuthController::class)->group(function () {
+    Route::post('/google/login', 'handleGoogleCallback');
+    Route::post('/login/otp', 'loginWithOtp');
+    Route::post('/login/verify-otp', 'verifyOtp');
+    Route::post('/logout', 'logout')->middleware('auth:sanctum');
 });
 Route::prefix('user')->group(function () {
 
     Route::controller(App\Http\Controllers\User\DashboardController::class)->group(function () {
 
-        Route::post('/dashboard', 'index');  
+        Route::post('/dashboard', 'index');
         Route::get('/applicant/year', 'ApplicantYear');
         Route::get('/applicant/{id}/dashboard', 'ApplicantDetailDashboard');
-        Route::post('/applicant-details/pdf','idDashboardPDF');
-     
+        Route::post('/applicant-details/pdf', 'idDashboardPDF');
+
 
     });
 
@@ -56,15 +56,19 @@ Route::prefix('user')->group(function () {
 
     Route::controller(App\Http\Controllers\User\DeleteFormController::class)->group(function () {
 
-        Route::delete('/applicant/{id}/delete','applicantdelete');
-        Route::delete('/applicant/{id}/photo','applicantPhotoDelete');
+        Route::delete('/applicant/{id}/delete', 'applicantdelete');
+        Route::delete('/applicant/{id}/photo', 'applicantPhotoDelete');
 
     });
-    Route::controller(App\Http\Controllers\ProfileController::class)->group(function(){
-        Route::post('/profile-picture','profilePhotoUpdate')->middleware('auth:sanctum');
-        Route::post('/profile','profileUpdate')->middleware('auth:sanctum');
-        Route::post('/send-email-verification-code','sendEmailVerificationCode')->middleware('auth:sanctum');
+    Route::controller(App\Http\Controllers\ProfileController::class)->group(function () {
+        Route::post('/profile-picture', 'profilePhotoUpdate')->middleware('auth:sanctum');
+        Route::post('/profile', 'profileUpdate')->middleware('auth:sanctum');
+        Route::post('/send-email-verification-code', 'sendEmailVerificationCode')->middleware('auth:sanctum');
         Route::post('/verify-email', 'verifyEmail')->middleware('auth:sanctum');
+        Route::post('/send-mobile-verification-code','sendMobileVerificationCode')->middleware('auth:sanctum');
+        Route::post('/verify-mobile','verifyMobile')->middleware('auth:sanctum');
+        
+
     });
 
     Route::get("/check", function () {

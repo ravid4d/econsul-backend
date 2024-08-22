@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{User,VerifyEmailCode};
+use App\Models\{User,VerifyEmailCode,VerifyMobileCode};
 use App\Helpers\ApiResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -122,6 +122,8 @@ class ProfileController extends Controller
 
             $emailverify->delete();
             $user->email = $request->email;
+            $user->email_verified_at = now();
+            $user->save();
             
 
             return ApiResponse::success('Email successfully verified!');
@@ -134,7 +136,7 @@ class ProfileController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'mobile_number' => 'required|unique:users,mobile_number',
+                'mobile_number' => 'required|unique:users,mobile_number'
             ]);
 
             if ($validator->fails()) {
@@ -143,13 +145,47 @@ class ProfileController extends Controller
 
             // $code = rand(100000, 999999);
             $code = '111111';
-            $mobile_number = $request->mobile_number;
-            VerifyEmailCode::updateOrCreate(
-                ["user_id"=>$request->user()->id,"email"=>$request->email],
+            $user = $request->user();
+            VerifyMobileCode::updateOrCreate(
+                ["user_id"=>$request->user()->id,"mobile_number"=>$request->mobile_number],
                 ["code"=>$code,"otp_expires_at"=>now()->addMinutes(10)]);
             
+            return ApiResponse::success('Otp sent to given mobile number!');
 
-            return ApiResponse::success('Otp sent to given email!');
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage());
+        }
+    }
+    public function verifyMobile(Request $request)
+    {
+        try{
+            $validator = Validator::make($request->all(), [
+                'mobile_number' => 'required|unique:users,mobile_number',
+                'code' => 'required|digits:6'
+            ]);
+
+            if ($validator->fails()) {
+                return ApiResponse::error("Validation Error!", $validator->errors());
+            }
+            $user = $request->user();
+            $numberverify = VerifyMobileCode::where('mobile_number', $request->mobile_number)->where('user_id',$user->id)->where('code',$request->code)->first();
+
+            if (!$numberverify || $numberverify->code !== $request->code) {
+                // return response()->json(['message' => 'Invalid OTP.'], 401);
+                return ApiResponse::error('Invalid OTP.', [], 401);
+            }
+
+            if (now()->greaterThan($numberverify->otp_expires_at)) {
+                // return response()->json(['message' => 'OTP has expired.'], 401);
+                return ApiResponse::error('OTP has expired.', [], 401);
+            }
+
+            $numberverify->delete();
+            $user->mobile_number = $request->mobile_number;
+            $user->number_verified_at = now();
+            $user->save();
+
+            return ApiResponse::success('Mobile Number successfully verified!');
 
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
