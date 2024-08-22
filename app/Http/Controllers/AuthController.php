@@ -38,8 +38,11 @@ class AuthController extends Controller
                 ]);
                 $token = $newUser->createToken('remember_token')->plainTextToken;
                 $data['authToken'] = $token;
-                $data['name'] = $newUser->name . " " . $newUser->surname;
+                $data['name'] = $newUser->name;
+                $data['surname'] = $newUser->surname;
                 $data['email'] = $newUser->email;
+                $data['profile_picture'] = $newUser->profile_picture;
+                $data['mobile_number'] = $newUser->mobile_number;
             }
             return ApiResponse::success("Logged in Successfully!", $data);
         } catch (\Exception $e) {
@@ -126,7 +129,7 @@ class AuthController extends Controller
             $user->save();
 
             // return response()->json(['token' => $token]);
-            return ApiResponse::success("Logged in Successfully!", ['authToken' => $token, 'name' => $user->name . " " . $user->surname, 'email' => $user->email]);
+            return ApiResponse::success("Logged in Successfully!", ['authToken' => $token, 'name' => $user->name,'surname'=>$user->surname,'email' => $user->email,'mobile_number'=>$user->mobile_number,'profile_picture'=>$user->profile_picture]);
 
 
         } catch (\Exception $e) {

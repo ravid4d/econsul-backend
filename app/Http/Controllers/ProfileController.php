@@ -144,7 +144,7 @@ class ProfileController extends Controller
             // $code = rand(100000, 999999);
 
             $code = '111111';
-            $email = $request->input('email');
+            $email = $request->email;
             VerifyEmailCode::updateOrCreate(
                 ["user_id"=>$request->user()->id,"email"=>$request->email],
                 ["code"=>$code,"otp_expires_at"=>now()->addMinutes(10)]);
