@@ -23,10 +23,12 @@ class FormController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
     
-            $userId = 1; // Replace this with $request->user()->id if using authentication
+            $userId = 2; // Replace this with $request->user()->id if using authentication
             
-            $id = $request->input('id'); // Safely get the 'id' from request
-            if ($id) {
+           // Safely get the 'id' from request
+           
+            if ($request->input('id')) {
+                $id = $request->input('id');
                 // Update the existing record
                 $form = ApplicantDetail::updateOrCreate(
                     ['id' => $id], // Match record by 'id'
@@ -39,22 +41,18 @@ class FormController extends Controller
                     'eligibility_status' => $request->eligibility
                 ]);
             }
-    
-            // Log the result of updateOrCreate
-            \Log::info('Form Created/Updated:', $form->toArray());
-    
-            // Update or create the FormStatus record
+            
+         
             FormStatus::updateOrCreate(
                 ['applicant_detail_id' => $form->id],
                 ['status' => 'inprogress']
             );
-    
+
             return ApiResponse::success('Form Submitted Successfully!', [
                 'applicationId' => $form->id,
                 'created_at' => $form->created_at
             ]);
         } catch (\Exception $e) {
-            \Log::error('Eligibility Submission Error: ' . $e->getMessage());
             return ApiResponse::error($e->getMessage());
         }
     }
@@ -70,7 +68,7 @@ class FormController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
             // $userId = $request->user()->id;
-            $userId = 1;
+            $userId = 2;
             ApplicantDetail::where('id', $request->application_id)->where('user_id', $userId)->update(['education_level' => $request->education]);
 
             return ApiResponse::success('Form Submitted Successfully!');
@@ -90,7 +88,7 @@ class FormController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
             // $userId = $request->user()->id;
-            $userId = 1;
+            $userId = 2;
             ApplicantDetail::where('id', $request->application_id)->where('user_id', $userId)->update(['personal_info' => $request->personal]);
 
             return ApiResponse::success('Form Submitted Successfully!');
@@ -110,7 +108,7 @@ class FormController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
             // $userId = $request->user()->id;
-            $userId = 1;
+            $userId = 2;
             ApplicantDetail::where('id', $request->application_id)->where('user_id', $userId)->update(['contact_info' => $request->contact]);
 
             return ApiResponse::success('Form Submitted Successfully!');
@@ -130,7 +128,7 @@ class FormController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
             // $userId = $request->user()->id;
-            $userId = 1;
+            $userId = 2;
             ApplicantDetail::where('id', $request->application_id)->where('user_id', $userId)->update(['spouse_info' => $request->spouse]);
 
             return ApiResponse::success('Form Submitted Successfully!');
@@ -279,7 +277,7 @@ class FormController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'application_id' => 'required|exists:applicant_details,id',
+                // 'application_id' => 'required|exists:applicant_details,id',
                 'photos' => 'required|array',
                 'photos.*.photo_owner' => 'required|string'
             ]);

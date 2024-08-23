@@ -29,8 +29,16 @@ class ApplicantDetail extends Model
     {
         return $this->hasMany(PhotoDetail::class);
     }
-    public function formConfirm()
+    public function SpouseDetail()
     {
-        return $this->hasMany(Confirm::class);
+        return $this->hasOne(SpouseDetail::class);
     }
+    public function ChildDetail()
+    {
+        return $this->hasMany(ChildDetail::class);
+    }
+   
+
+
+   
 }

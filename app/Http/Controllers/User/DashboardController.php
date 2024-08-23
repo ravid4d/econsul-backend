@@ -108,41 +108,59 @@ class DashboardController extends Controller
     public function ApplicantDetailDashboard($id)
     {
         try {
-            $applicantDetail = ApplicantDetail::with('formPhoto', 'formConfirm')->find($id);
-            // Retrieve the applicant detail based on the $id
-            // return  $applicantDetail;
+            $applicantDetail = ApplicantDetail::with('formPhoto', 'SpouseDetail', 'ChildDetail', 'formStatus')->find($id);
+
+            // Check if the applicant detail exists
             if (!$applicantDetail) {
                 return response()->json(['message' => 'Applicant not found'], 404);
             }
-
-            // Check each property and return the first key that is null
-            if (is_null($applicantDetail->eligibility_status)) {
-                return 'eligibility';
-            }
+        
+            $nullKeys = [];
+        
+            // Check each property and add the key to the array if it is null
             if (is_null($applicantDetail->education_level)) {
-                return 'education';
+                $nullKeys[] = 'education';
             }
             if (is_null($applicantDetail->personal_info)) {
-                return 'personal';
+                $nullKeys[] = 'personal';
             }
             if (is_null($applicantDetail->contact_info)) {
-                return 'contact';
+                $nullKeys[] = 'contact';
             }
             if (is_null($applicantDetail->spouse_info)) {
-                return 'spouse';
+                $nullKeys[] = 'spouse';
             }
             if (is_null($applicantDetail->children_info)) {
-                return 'children';
+                $nullKeys[] = 'children';
             }
-            if (is_null($applicantDetail->formPhoto)) {
-                return 'photo'; // Assuming `photo` is a part of ApplicantDetail
+            if (empty($applicantDetail->spouse_detail)) {
+                $nullKeys[] = 'spouse-info';
             }
-            if (is_null($applicantDetail->form_confirm)) {
-                return 'confirmation'; // Assuming `confirmation` is a part of ApplicantDetail
+            if (!is_null($applicantDetail->children_info) && is_int($applicantDetail->children_info)) {
+                $childDetails = is_array($applicantDetail->child_detail) ? $applicantDetail->child_detail : [];
+            
+                for ($i = 0; $i < $applicantDetail->children_info; $i++) {
+                    if (!isset($childDetails[$i]) || is_null($childDetails[$i])) {
+                        $nullKeys[] = 'child/'.($i + 1);
+                    }
+                }
             }
+            if (empty($applicantDetail->form_photo)) {
+                $nullKeys[] = 'photo';
+            }
+            if (is_null($applicantDetail->form_status)) {
+                $nullKeys[] = 'confirmation';
+            }
+        
+            // Return the array of null keys
+            if (!empty($nullKeys)) {
+                return response()->json(['data' => $nullKeys]);
+            }
+        
+            // If everything is filled, return a completion message or status
+            // return response()->json(['message' => 'All sections completed']);
+            return response()->json(['data' => $nullKeys]);
 
-            // If none of the keys are null
-            return ApiResponse::success('Data retrieved successfully', $applicantDetail);
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
         }

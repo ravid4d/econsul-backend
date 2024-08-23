@@ -23,24 +23,24 @@ class ChildDetail extends Model
     // Accessor to encrypt 'id'
     public function getIdAttribute($value)
     {
-        return Crypt::encrypt($value);
+        return base64_encode($value);
     }
 
-    // Mutator to decrypt 'id'
+    // Mutator to Base64 decode 'id'
     public function setIdAttribute($value)
     {
-        $this->attributes['id'] = Crypt::decrypt($value);
+        $this->attributes['id'] = base64_decode($value);
     }
 
-    // Accessor to encrypt 'applicant_detail_id'
+    // Accessor to Base64 encode 'applicant_detail_id'
     public function getApplicantDetailIdAttribute($value)
     {
-        return Crypt::encrypt($value);
+        return base64_encode($value);
     }
 
-    // Mutator to decrypt 'applicant_detail_id'
+    // Mutator to Base64 decode 'applicant_detail_id'
     public function setApplicantDetailIdAttribute($value)
     {
-        $this->attributes['applicant_detail_id'] = Crypt::decrypt($value);
+        $this->attributes['applicant_detail_id'] = base64_decode($value);
     }
 }
