@@ -110,7 +110,7 @@ class ProfileController extends Controller
             $user = $request->user();
             $emailverify = VerifyEmailCode::where('email', $request->email)->where('user_id',$user->id)->where('code',$request->code)->first();
 
-            if (!$emailverify || $emailverify->code !== $request->code) {
+            if (!$emailverify || $emailverify->code != $request->code) {
                 // return response()->json(['message' => 'Invalid OTP.'], 401);
                 return ApiResponse::error('Invalid OTP.', [], 401);
             }
@@ -170,7 +170,7 @@ class ProfileController extends Controller
             $user = $request->user();
             $numberverify = VerifyMobileCode::where('mobile_number', $request->mobile_number)->where('user_id',$user->id)->where('code',$request->code)->first();
 
-            if (!$numberverify || $numberverify->code !== $request->code) {
+            if (!$numberverify || $numberverify->code != $request->code) {
                 // return response()->json(['message' => 'Invalid OTP.'], 401);
                 return ApiResponse::error('Invalid OTP.', [], 401);
             }
