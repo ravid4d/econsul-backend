@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Container\Attributes\DB;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -71,11 +72,11 @@ Route::prefix('user')->group(function () {
 
     });
 
-    Route::get("/check", function () {
-        $database = DB::connection()->getDatabaseName();
-        return response()->json([
-            "database" => $database,
-            "Hello" => "world"
-        ]);
-    });
+    // Route::get("/check", function () {
+    //     $database = DB::connection()->getDatabaseName();
+    //     return response()->json([
+    //         "database" => $database,
+    //         "Hello" => "world"
+    //     ]);
+    // });
 });

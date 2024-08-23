@@ -139,7 +139,7 @@ class DashboardController extends Controller
             if (!is_null($applicantDetail->children_info) && is_int($applicantDetail->children_info)) {
                 $childDetails = is_array($applicantDetail->child_detail) ? $applicantDetail->child_detail : [];
             
-                for ($i = 0; $i < $applicantDetail->children_info; $i++) {
+                for ($i = 0; $i <= $applicantDetail->children_info; $i++) {
                     if (!isset($childDetails[$i]) || is_null($childDetails[$i])) {
                         $nullKeys[] = 'child/'.($i + 1);
                     }
