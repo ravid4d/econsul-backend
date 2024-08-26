@@ -8,7 +8,7 @@ use App\Helpers\ApiResponse;
 use App\Models\{ApplicantDetail, SpouseDetail, ChildDetail, PhotoDetail, FormStatus}; // Import the PDF facade
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
-use DB;
+use Illuminate\Container\Attributes\DB;
 class DashboardController extends Controller
 {
     public function index(Request $request)
