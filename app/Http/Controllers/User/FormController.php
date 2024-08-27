@@ -138,6 +138,7 @@ class FormController extends Controller
     }
     public function children_info(Request $request)
     {
+        // return $request->all();
         try {
             $validator = Validator::make($request->all(), [
                 "children" => "required",
@@ -148,7 +149,7 @@ class FormController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
             // $userId = $request->user()->id;
-            $userId = 1;
+            $userId = 2;
             ApplicantDetail::where('id', $request->application_id)->where('user_id', $userId)->update(['children_info' => $request->children]);
 
             return ApiResponse::success('Form Submitted Successfully!');

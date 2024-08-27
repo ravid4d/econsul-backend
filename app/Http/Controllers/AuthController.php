@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Helpers\ApiResponse;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -52,53 +53,107 @@ class AuthController extends Controller
             return ApiResponse::error("Invalid token or Google authentication failed.", ["error_msg" => $e->getMessage()]);
         }
     }
+    // public function loginWithOtp(Request $request)
+    // {
+    //     try {
+    //         $validator = Validator::make($request->all(), [
+    //             'mobile_number' => 'required',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             return ApiResponse::error("Validation Error!", $validator->errors());
+    //         }
+
+    //         $mobileNumber = $request->input('mobile_number');
+    //         $user = User::where('mobile_number', $mobileNumber)->first();
+
+    //         if (!$user) {
+    //             // Register the user
+    //             $user = User::create([
+    //                 'mobile_number' => $mobileNumber,
+    //             ]);
+    //         }
+
+    //         // Generate OTP
+    //         // $otp = rand(100000, 999999);
+    //         $otp = '111111';
+
+    //         // Send OTP using external API
+    //         // $response = Http::post('https://your-otp-service.com/send', [
+    //         //     'mobile_number' => $mobileNumber,
+    //         //     'otp' => $otp,
+    //         // ]);
+
+    //         // Check if OTP was sent successfully
+    //         // if ($response->successful()) {
+    //         // Store OTP and expiration time in the session or database
+    //         $user->otp_code = $otp;
+    //         $user->otp_expires_at = now()->addMinutes(10); // OTP expires in 10 minutes
+    //         $user->save();
+
+    //         // return response()->json(['message' => 'OTP sent successfully.']);
+    //         return ApiResponse::success('OTP sent successfully.');
+    //         // }
+
+    //         // return response()->json(['message' => 'Failed to send OTP.'], 500);
+    //     } catch (\Exception $e) {
+    //         return ApiResponse::error("Invalid token or Google authentication failed.", ["error_msg" => $e->getMessage()]);
+    //     }
+    // }
+
     public function loginWithOtp(Request $request)
-    {
-        try {
-            $validator = Validator::make($request->all(), [
-                'mobile_number' => 'required',
+{
+    try {
+        $validator = Validator::make($request->all(), [
+            'mobile_number' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return ApiResponse::error("Validation Error!", $validator->errors());
+        }
+
+        $mobileNumber = $request->input('mobile_number');
+        $user = User::where('mobile_number', $mobileNumber)->first();
+
+        if (!$user) {
+            $user = User::create([
+                'mobile_number' => $mobileNumber,
+            ]);
+        }
+
+        // Generate OTP
+        $otp = '111111';
+
+        // Send OTP using external API
+        $response = Http::withHeaders([
+            'x-api-key' => 'Ha9tIrLDrUV6?lx-k$8UDr6s?k_t#_tLm',
+        ])->post('http://sms-sender.eu-central-1.elasticbeanstalk.com/send_sms', [
+            'phone_number' => $mobileNumber,
+            'message' => 'Your OTP is' . $otp,
+            'utf' => 1,
+        ]);
+
+        if ($response->failed()) {
+            Log::error('SMS Sending Failed', [
+                'response_status' => $response->status(),
+                'response_body' => $response->body(),
             ]);
 
-            if ($validator->fails()) {
-                return ApiResponse::error("Validation Error!", $validator->errors());
-            }
+            return response()->json(['message' => 'Failed to send OTP.', 'details' => $response->body()], 500);
+        }
 
-            $mobileNumber = $request->input('mobile_number');
-            $user = User::where('mobile_number', $mobileNumber)->first();
-
-            if (!$user) {
-                // Register the user
-                $user = User::create([
-                    'mobile_number' => $mobileNumber,
-                ]);
-            }
-
-            // Generate OTP
-            // $otp = rand(100000, 999999);
-            $otp = '111111';
-
-            // Send OTP using external API
-            // $response = Http::post('https://your-otp-service.com/send', [
-            //     'mobile_number' => $mobileNumber,
-            //     'otp' => $otp,
-            // ]);
-
-            // Check if OTP was sent successfully
-            // if ($response->successful()) {
-            // Store OTP and expiration time in the session or database
+        if ($response->successful()) {
             $user->otp_code = $otp;
-            $user->otp_expires_at = now()->addMinutes(10); // OTP expires in 10 minutes
+            $user->otp_expires_at = now()->addMinutes(10);
             $user->save();
 
-            // return response()->json(['message' => 'OTP sent successfully.']);
-            return ApiResponse::success('OTP sent successfully.');
-            // }
-
-            // return response()->json(['message' => 'Failed to send OTP.'], 500);
-        } catch (\Exception $e) {
-            return ApiResponse::error("Invalid token or Google authentication failed.", ["error_msg" => $e->getMessage()]);
+            return response()->json(['message' => 'OTP sent successfully.']);
         }
+
+    } catch (\Exception $e) {
+        return ApiResponse::error("An error occurred while processing the request.", ["error_msg" => $e->getMessage()]);
     }
+}
     public function verifyOtp(Request $request)
     {
         try {

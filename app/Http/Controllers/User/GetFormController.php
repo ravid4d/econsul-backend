@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\ApiResponse;
 use App\Models\{ApplicantDetail, SpouseDetail, ChildDetail, PhotoDetail, FormStatus};
+use Illuminate\Support\Facades\Log;
 
 
 class GetFormController extends Controller
@@ -70,11 +71,23 @@ class GetFormController extends Controller
             return ApiResponse::success('Data retrieved successfully', $childDetail);
 
         } catch (\Exception $e) {
-            \Log::error('Error retrieving child details: ' . $e->getMessage());
+            Log::error('Error retrieving child details: ' . $e->getMessage());
 
             // Return an error response if something goes wrong
             return ApiResponse::error($e->getMessage());
         }
+    }
+    public function showChildDetail($id)
+    {
+        // Retrieve the applicant detail based on the $id
+        $childDetail = ChildDetail::where('applicant_detail_id', $id)->get();
+
+        if (!$childDetail) {
+            return response()->json(['message' => 'Applicant not found'], 404);
+        }
+
+        return ApiResponse::success('Data retrieved successfully', $childDetail);
+
     }
     public function applicantPhoto($id)
     {
