@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Helpers\ApiResponse;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use App\Services\OtpService;
 
 class AuthController extends Controller
 {
@@ -72,31 +73,25 @@ class AuthController extends Controller
                     'mobile_number' => $mobileNumber,
                 ]);
             }
-
             // Generate OTP
             // $otp = rand(100000, 999999);
             $otp = '111111';
-
-            // Send OTP using external API
-            // $response = Http::post('https://your-otp-service.com/send', [
-            //     'mobile_number' => $mobileNumber,
-            //     'otp' => $otp,
-            // ]);
-
+            $msg = "Your verification code is $otp. Use this code to complete your login. Do not share this code with anyone. The code will expire in 10 minutes.";
+            $response = OtpService::sendOtp($mobileNumber, $msg);
             // Check if OTP was sent successfully
-            // if ($response->successful()) {
-            // Store OTP and expiration time in the session or database
-            $user->otp_code = $otp;
-            $user->otp_expires_at = now()->addMinutes(10); // OTP expires in 10 minutes
-            $user->save();
-
-            // return response()->json(['message' => 'OTP sent successfully.']);
-            return ApiResponse::success('OTP sent successfully.');
-            // }
-
+            if ($response) {
+                // Store OTP and expiration time in the session or database
+                $user->otp_code = $otp;
+                $user->otp_expires_at = now()->addMinutes(10); // OTP expires in 10 minutes
+                $user->save();
+                // return response()->json(['message' => 'OTP sent successfully.']);
+                return ApiResponse::success('OTP sent successfully.');
+            } else {
+                return ApiResponse::error('Failed to send OTP.');
+            }
             // return response()->json(['message' => 'Failed to send OTP.'], 500);
         } catch (\Exception $e) {
-            return ApiResponse::error("Invalid token or Google authentication failed.", ["error_msg" => $e->getMessage()]);
+            return ApiResponse::error("Failed to send OTP.", ["error_msg" => $e->getMessage()]);
         }
     }
     public function verifyOtp(Request $request)
@@ -132,7 +127,7 @@ class AuthController extends Controller
             $user->save();
 
             // return response()->json(['token' => $token]);
-            return ApiResponse::success("Logged in Successfully!", ['authToken' => $token, 'name' => $user->name,'surname'=>$user->surname,'email' => $user->email,'mobile_number'=>$user->mobile_number,'profile_picture'=>$user->profile_picture]);
+            return ApiResponse::success("Logged in Successfully!", ['authToken' => $token, 'name' => $user->name, 'surname' => $user->surname, 'email' => $user->email, 'mobile_number' => $user->mobile_number, 'profile_picture' => $user->profile_picture]);
 
 
         } catch (\Exception $e) {

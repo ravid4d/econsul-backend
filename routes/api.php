@@ -56,10 +56,8 @@ Route::prefix('user')->group(function () {
     });
 
     Route::controller(App\Http\Controllers\User\DeleteFormController::class)->group(function () {
-
         Route::delete('/applicant/{id}/delete', 'applicantdelete');
         Route::delete('/applicant/{id}/photo', 'applicantPhotoDelete');
-
     });
     Route::controller(App\Http\Controllers\ProfileController::class)->group(function () {
         Route::post('/profile-picture', 'profilePhotoUpdate')->middleware('auth:sanctum');
