@@ -53,54 +53,6 @@ class AuthController extends Controller
             return ApiResponse::error("Invalid token or Google authentication failed.", ["error_msg" => $e->getMessage()]);
         }
     }
-    // public function loginWithOtp(Request $request)
-    // {
-    //     try {
-    //         $validator = Validator::make($request->all(), [
-    //             'mobile_number' => 'required',
-    //         ]);
-
-    //         if ($validator->fails()) {
-    //             return ApiResponse::error("Validation Error!", $validator->errors());
-    //         }
-
-    //         $mobileNumber = $request->input('mobile_number');
-    //         $user = User::where('mobile_number', $mobileNumber)->first();
-
-    //         if (!$user) {
-    //             // Register the user
-    //             $user = User::create([
-    //                 'mobile_number' => $mobileNumber,
-    //             ]);
-    //         }
-
-    //         // Generate OTP
-    //         // $otp = rand(100000, 999999);
-    //         $otp = '111111';
-
-    //         // Send OTP using external API
-    //         // $response = Http::post('https://your-otp-service.com/send', [
-    //         //     'mobile_number' => $mobileNumber,
-    //         //     'otp' => $otp,
-    //         // ]);
-
-    //         // Check if OTP was sent successfully
-    //         // if ($response->successful()) {
-    //         // Store OTP and expiration time in the session or database
-    //         $user->otp_code = $otp;
-    //         $user->otp_expires_at = now()->addMinutes(10); // OTP expires in 10 minutes
-    //         $user->save();
-
-    //         // return response()->json(['message' => 'OTP sent successfully.']);
-    //         return ApiResponse::success('OTP sent successfully.');
-    //         // }
-
-    //         // return response()->json(['message' => 'Failed to send OTP.'], 500);
-    //     } catch (\Exception $e) {
-    //         return ApiResponse::error("Invalid token or Google authentication failed.", ["error_msg" => $e->getMessage()]);
-    //     }
-    // }
-
     public function loginWithOtp(Request $request)
     {
         try {
@@ -111,6 +63,7 @@ class AuthController extends Controller
             if ($validator->fails()) {
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
+
             $mobileNumber = $request->input('mobile_number');
             $user = User::where('mobile_number', $mobileNumber)->first();
 
