@@ -200,4 +200,20 @@ class ProfileController extends Controller
             return ApiResponse::error($e->getMessage());
         }
     }
+    public function deleteUser(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user) {
+            // Delete the current access token
+            $user->currentAccessToken()->delete();
+
+
+            $user->delete();
+
+            return ApiResponse::success('Your profile has been successfully deleted.');
+        } else {
+            return ApiResponse::error('User not found.', 404);
+        }
+    }
 }

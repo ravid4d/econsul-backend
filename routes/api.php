@@ -66,6 +66,7 @@ Route::prefix('user')->group(function () {
         Route::post('/verify-email', 'verifyEmail')->middleware('auth:sanctum');
         Route::post('/send-mobile-verification-code','sendMobileVerificationCode')->middleware('auth:sanctum');
         Route::post('/verify-mobile','verifyMobile')->middleware('auth:sanctum');
+        Route::delete('/profile/delete','deleteUser')->middleware('auth:sanctum');
     
     });
     Route::controller(App\Http\Controllers\User\CopyApplicationController::class)->group(function () {
