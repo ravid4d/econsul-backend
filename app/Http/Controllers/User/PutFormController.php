@@ -34,6 +34,10 @@ class PutFormController extends Controller
                 'name' => $request->first_name,
                 'middle_name' => $request->middle_name,
                 'birth_date' => $request->birth_date,
+                'gender' => $request->gender,
+
+
+                
                 'country' => $request->country,
                 'city' => $request->city,
             ]);
