@@ -14,7 +14,7 @@ Route::controller(App\Http\Controllers\AuthController::class)->group(function ()
     Route::post('/login/verify-otp', 'verifyOtp');
     Route::post('/logout', 'logout')->middleware('auth:sanctum');
 });
-Route::prefix('user')->group(function () {
+Route::prefix('user')->middleware('auth:sanctum')->group(function () {
 
     Route::controller(App\Http\Controllers\User\DashboardController::class)->group(function () {
 
@@ -60,13 +60,13 @@ Route::prefix('user')->group(function () {
         Route::delete('/applicant/{id}/photo', 'applicantPhotoDelete');
     });
     Route::controller(App\Http\Controllers\ProfileController::class)->group(function () {
-        Route::post('/profile-picture', 'profilePhotoUpdate')->middleware('auth:sanctum');
-        Route::post('/profile', 'profileUpdate')->middleware('auth:sanctum');
-        Route::post('/send-email-verification-code', 'sendEmailVerificationCode')->middleware('auth:sanctum');
-        Route::post('/verify-email', 'verifyEmail')->middleware('auth:sanctum');
-        Route::post('/send-mobile-verification-code','sendMobileVerificationCode')->middleware('auth:sanctum');
-        Route::post('/verify-mobile','verifyMobile')->middleware('auth:sanctum');
-        Route::delete('/profile/delete','deleteUser')->middleware('auth:sanctum');
+        Route::post('/profile-picture', 'profilePhotoUpdate');
+        Route::post('/profile', 'profileUpdate');
+        Route::post('/send-email-verification-code', 'sendEmailVerificationCode');
+        Route::post('/verify-email', 'verifyEmail');
+        Route::post('/send-mobile-verification-code','sendMobileVerificationCode');
+        Route::post('/verify-mobile','verifyMobile');
+        Route::delete('/profile/delete','deleteUser');
     
     });
     Route::controller(App\Http\Controllers\User\CopyApplicationController::class)->group(function () {
