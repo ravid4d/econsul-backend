@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{User,VerifyEmailCode,VerifyMobileCode};
+use App\Models\{User, VerifyEmailCode, VerifyMobileCode};
 use App\Helpers\ApiResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use App\Services\OtpService;
 
 class ProfileController extends Controller
 {
@@ -86,9 +87,10 @@ class ProfileController extends Controller
             $code = '111111';
             // $email = $request->email;
             VerifyEmailCode::updateOrCreate(
-                ["user_id"=>$request->user()->id,"email"=>$request->email],
-                ["code"=>$code,"otp_expires_at"=>now()->addMinutes(10)]);
-            
+                ["user_id" => $request->user()->id, "email" => $request->email],
+                ["code" => $code, "otp_expires_at" => now()->addMinutes(10)]
+            );
+
 
             return ApiResponse::success('Otp sent to given email!');
 
@@ -108,9 +110,9 @@ class ProfileController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
             $user = $request->user();
-            $emailverify = VerifyEmailCode::where('email', $request->email)->where('user_id',$user->id)->where('code',$request->code)->first();
+            $emailverify = VerifyEmailCode::where('email', $request->email)->where('user_id', $user->id)->where('code', $request->code)->first();
 
-            if (!$emailverify || $emailverify->code !== $request->code) {
+            if (!$emailverify || $emailverify->code != $request->code) {
                 // return response()->json(['message' => 'Invalid OTP.'], 401);
                 return ApiResponse::error('Invalid OTP.', [], 401);
             }
@@ -124,7 +126,7 @@ class ProfileController extends Controller
             $user->email = $request->email;
             $user->email_verified_at = now();
             $user->save();
-            
+
 
             return ApiResponse::success('Email successfully verified!');
 
@@ -145,12 +147,19 @@ class ProfileController extends Controller
 
             // $code = rand(100000, 999999);
             $code = '111111';
+            $msg = "Your verification code is $code. Use this to change  your mobile number. Do not share this code with anyone. The code will expire in 10 minutes.";
+            $response = OtpService::sendOtp($request->mobile_number, $msg);
             $user = $request->user();
-            VerifyMobileCode::updateOrCreate(
-                ["user_id"=>$request->user()->id,"mobile_number"=>$request->mobile_number],
-                ["code"=>$code,"otp_expires_at"=>now()->addMinutes(10)]);
-            
-            return ApiResponse::success('Otp sent to given mobile number!');
+            if ($response) {
+                VerifyMobileCode::updateOrCreate(
+                    ["user_id" => $request->user()->id, "mobile_number" => $request->mobile_number],
+                    ["code" => $code, "otp_expires_at" => now()->addMinutes(10)]
+                );
+
+                return ApiResponse::success('Otp sent to given mobile number!');
+            } else {
+                return ApiResponse::error('Failed to send OTP.');
+            }
 
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
@@ -158,7 +167,7 @@ class ProfileController extends Controller
     }
     public function verifyMobile(Request $request)
     {
-        try{
+        try {
             $validator = Validator::make($request->all(), [
                 'mobile_number' => 'required|unique:users,mobile_number',
                 'code' => 'required|digits:6'
@@ -168,9 +177,9 @@ class ProfileController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
             $user = $request->user();
-            $numberverify = VerifyMobileCode::where('mobile_number', $request->mobile_number)->where('user_id',$user->id)->where('code',$request->code)->first();
+            $numberverify = VerifyMobileCode::where('mobile_number', $request->mobile_number)->where('user_id', $user->id)->where('code', $request->code)->first();
 
-            if (!$numberverify || $numberverify->code !== $request->code) {
+            if (!$numberverify || $numberverify->code != $request->code) {
                 // return response()->json(['message' => 'Invalid OTP.'], 401);
                 return ApiResponse::error('Invalid OTP.', [], 401);
             }
@@ -189,6 +198,22 @@ class ProfileController extends Controller
 
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
+        }
+    }
+    public function deleteUser(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user) {
+            // Delete the current access token
+            $user->currentAccessToken()->delete();
+
+
+            $user->delete();
+
+            return ApiResponse::success('Your profile has been successfully deleted.');
+        } else {
+            return ApiResponse::error('User not found.', 404);
         }
     }
 }

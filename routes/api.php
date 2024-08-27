@@ -56,10 +56,8 @@ Route::prefix('user')->group(function () {
     });
 
     Route::controller(App\Http\Controllers\User\DeleteFormController::class)->group(function () {
-
         Route::delete('/applicant/{id}/delete', 'applicantdelete');
         Route::delete('/applicant/{id}/photo', 'applicantPhotoDelete');
-
     });
     Route::controller(App\Http\Controllers\ProfileController::class)->group(function () {
         Route::post('/profile-picture', 'profilePhotoUpdate')->middleware('auth:sanctum');
@@ -68,6 +66,7 @@ Route::prefix('user')->group(function () {
         Route::post('/verify-email', 'verifyEmail')->middleware('auth:sanctum');
         Route::post('/send-mobile-verification-code','sendMobileVerificationCode')->middleware('auth:sanctum');
         Route::post('/verify-mobile','verifyMobile')->middleware('auth:sanctum');
+        Route::delete('/profile/delete','deleteUser')->middleware('auth:sanctum');
     
     });
     Route::controller(App\Http\Controllers\User\CopyApplicationController::class)->group(function () {

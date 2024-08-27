@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Helpers\ApiResponse;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
+use App\Services\OtpService;
 
 class AuthController extends Controller
 {
@@ -102,58 +102,45 @@ class AuthController extends Controller
     // }
 
     public function loginWithOtp(Request $request)
-{
-    try {
-        $validator = Validator::make($request->all(), [
-            'mobile_number' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return ApiResponse::error("Validation Error!", $validator->errors());
-        }
-
-        $mobileNumber = $request->input('mobile_number');
-        $user = User::where('mobile_number', $mobileNumber)->first();
-
-        if (!$user) {
-            $user = User::create([
-                'mobile_number' => $mobileNumber,
-            ]);
-        }
-
-        // Generate OTP
-        $otp = '111111';
-
-        // Send OTP using external API
-        $response = Http::withHeaders([
-            'x-api-key' => 'Ha9tIrLDrUV6?lx-k$8UDr6s?k_t#_tLm',
-        ])->post('http://sms-sender.eu-central-1.elasticbeanstalk.com/send_sms', [
-            'phone_number' => $mobileNumber,
-            'message' => 'Your OTP is' . $otp,
-            'utf' => 1,
-        ]);
-
-        if ($response->failed()) {
-            Log::error('SMS Sending Failed', [
-                'response_status' => $response->status(),
-                'response_body' => $response->body(),
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'mobile_number' => 'required',
             ]);
 
-            return response()->json(['message' => 'Failed to send OTP.', 'details' => $response->body()], 500);
+            if ($validator->fails()) {
+                return ApiResponse::error("Validation Error!", $validator->errors());
+            }
+            $mobileNumber = $request->input('mobile_number');
+            $user = User::where('mobile_number', $mobileNumber)->first();
+
+            if (!$user) {
+                // Register the user
+                $user = User::create([
+                    'mobile_number' => $mobileNumber,
+                ]);
+            }
+            // Generate OTP
+            // $otp = rand(100000, 999999);
+            $otp = '111111';
+            $msg = "Your verification code is $otp. Use this code to complete your login. Do not share this code with anyone. The code will expire in 10 minutes.";
+            $response = OtpService::sendOtp($mobileNumber, $msg);
+            // Check if OTP was sent successfully
+            if ($response) {
+                // Store OTP and expiration time in the session or database
+                $user->otp_code = $otp;
+                $user->otp_expires_at = now()->addMinutes(10); // OTP expires in 10 minutes
+                $user->save();
+                // return response()->json(['message' => 'OTP sent successfully.']);
+                return ApiResponse::success('OTP sent successfully.');
+            } else {
+                return ApiResponse::error('Failed to send OTP.');
+            }
+            // return response()->json(['message' => 'Failed to send OTP.'], 500);
+        } catch (\Exception $e) {
+            return ApiResponse::error("Failed to send OTP.", ["error_msg" => $e->getMessage()]);
         }
-
-        if ($response->successful()) {
-            $user->otp_code = $otp;
-            $user->otp_expires_at = now()->addMinutes(10);
-            $user->save();
-
-            return response()->json(['message' => 'OTP sent successfully.']);
-        }
-
-    } catch (\Exception $e) {
-        return ApiResponse::error("An error occurred while processing the request.", ["error_msg" => $e->getMessage()]);
     }
-}
     public function verifyOtp(Request $request)
     {
         try {
@@ -187,7 +174,7 @@ class AuthController extends Controller
             $user->save();
 
             // return response()->json(['token' => $token]);
-            return ApiResponse::success("Logged in Successfully!", ['authToken' => $token, 'name' => $user->name,'surname'=>$user->surname,'email' => $user->email,'mobile_number'=>$user->mobile_number,'profile_picture'=>$user->profile_picture]);
+            return ApiResponse::success("Logged in Successfully!", ['authToken' => $token, 'name' => $user->name, 'surname' => $user->surname, 'email' => $user->email, 'mobile_number' => $user->mobile_number, 'profile_picture' => $user->profile_picture]);
 
 
         } catch (\Exception $e) {
