@@ -38,7 +38,7 @@ Route::prefix('user')->middleware('auth:sanctum')->group(function () {
         Route::post('/child/form', 'childInfoSubmit');
 
         Route::post('/applicant/photo', 'photoUpdate');
-
+        Route::post('/submit', 'Submission');
         Route::post('/final/submit', 'finalSubmission');
     });
     Route::controller(App\Http\Controllers\User\GetFormController::class)->group(function () {

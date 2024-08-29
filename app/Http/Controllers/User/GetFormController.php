@@ -14,69 +14,66 @@ class GetFormController extends Controller
     public function applicantDetail(Request $request)
     {
         try {
-            // Fetch all relevant details
-            $applicantDetail = ApplicantDetail::all();
-            // Return a success response with the data
+            $userId = $request->user()->id;
+            $applicantDetail = ApplicantDetail::where('user_id', $userId)->get();
             return ApiResponse::success('Data retrieved successfully', $applicantDetail);
-
         } catch (\Exception $e) {
-            // Return an error response if something goes wrong
             return ApiResponse::error($e->getMessage());
         }
     }
-    public function showApplicantDetail($id)
+    public function showApplicantDetail(Request $request, $id)
     {
-        // Retrieve the applicant detail based on the $id
-        $applicantDetail = ApplicantDetail::find($id);
+        $userId = $request->user()->id;
+        $applicantDetail = ApplicantDetail::with('formPhoto', 'SpouseDetail', 'ChildDetail', 'formStatus')
+            ->where('id', $id)
+            ->where('user_id', $userId)
+            ->first();
 
         if (!$applicantDetail) {
             return response()->json(['message' => 'Applicant not found'], 404);
         }
 
         return ApiResponse::success('Data retrieved successfully', $applicantDetail);
-
     }
 
     public function spouseDetail(Request $request)
     {
         try {
-            $spouseDetail = SpouseDetail::all();
-            // Return a success response with the data
-            return ApiResponse::success('Data retrieved successfully', $spouseDetail);
-
+            // Retrieve the authenticated user's ID
+            $userId = $request->user()->id;
+            $spouseDetails = SpouseDetail::where('user_id', $userId)->get();
+            return ApiResponse::success('Data retrieved successfully', $spouseDetails);
         } catch (\Exception $e) {
-            // Return an error response if something goes wrong
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error('Failed to retrieve spouse details. Please try again later.');
         }
     }
-    public function showSpouseDetail($id)
+
+    public function showSpouseDetail(Request $request, $id)
     {
-        // Retrieve the applicant detail based on the $id
         $spouseDetail = SpouseDetail::where('applicant_detail_id', $id)->first();
-
+    
         if (!$spouseDetail) {
-            return response()->json(['message' => 'Applicant not found'], 404);
+            return response()->json(['message' => 'Spouse detail not found'], 404);
         }
-
+    
         return ApiResponse::success('Data retrieved successfully', $spouseDetail);
-
     }
-    public function childDetail()
-    {
-        try {
-          
-            $childDetail = ChildDetail::all();
 
-            // Return a success response with the data
-            return ApiResponse::success('Data retrieved successfully', $childDetail);
+    // public function childDetail()
+    // {
+    //     try {
 
-        } catch (\Exception $e) {
-            Log::error('Error retrieving child details: ' . $e->getMessage());
+    //         $childDetail = ChildDetail::all();
 
-            // Return an error response if something goes wrong
-            return ApiResponse::error($e->getMessage());
-        }
-    }
+    //         // Return a success response with the data
+    //         return ApiResponse::success('Data retrieved successfully', $childDetail);
+    //     } catch (\Exception $e) {
+    //         Log::error('Error retrieving child details: ' . $e->getMessage());
+
+    //         // Return an error response if something goes wrong
+    //         return ApiResponse::error($e->getMessage());
+    //     }
+    // }
     public function showChildDetail($id)
     {
         // Retrieve the applicant detail based on the $id
@@ -87,17 +84,15 @@ class GetFormController extends Controller
         }
 
         return ApiResponse::success('Data retrieved successfully', $childDetail);
-
     }
     public function applicantPhoto($id)
     {
         try {
-          
-            $photoDetail= PhotoDetail::where("applicant_detail_id",$id)->get();
+
+            $photoDetail = PhotoDetail::where("applicant_detail_id", $id)->get();
 
             // Return a success response with the data
             return ApiResponse::success('Data retrieved successfully', $photoDetail);
-
         } catch (\Exception $e) {
             \Log::error('Error retrieving child details: ' . $e->getMessage());
 
@@ -105,6 +100,4 @@ class GetFormController extends Controller
             return ApiResponse::error($e->getMessage());
         }
     }
-
-   
 }

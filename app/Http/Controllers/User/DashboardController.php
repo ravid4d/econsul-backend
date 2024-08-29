@@ -21,14 +21,16 @@ class DashboardController extends Controller
             $limit = $request->input('limit', 10); // Default limit is 10 records per page
             $search = $request->input('search'); // Search query
             $sortBy = $request->input('sortBy', 'id'); // Default sort by column is 'id'
-            $sortOrder = $request->input('sortOrder','asc'); // Default sort order is 'asc'
+            $sortOrder = $request->input('sortOrder', 'asc'); // Default sort order is 'asc'
             $year = $request->input('year'); // Year filter
-
+            $userId = $request->user()->id;
+            // return $userId;
             // Initialize the query
             $query = ApplicantDetail::query()
+                ->where('user_id', $userId)
                 ->join('form_statuses', 'applicant_details.id', '=', 'form_statuses.applicant_detail_id')
                 ->select('applicant_details.*', 'form_statuses.status as form_status_status');
-        
+
             // Apply search filter if provided
             if ($search) {
                 $query->where(function ($q) use ($search) {
@@ -37,7 +39,7 @@ class DashboardController extends Controller
                         ->orWhere('form_statuses.status', 'LIKE', "%$search%");
                 });
             }
-        
+
             if ($year && is_numeric($year) && strlen($year) === 4) {
                 $query->whereYear('applicant_details.created_at', $year);
             }
@@ -55,10 +57,10 @@ class DashboardController extends Controller
                 // Fallback to default sort by 'id'
                 $query->orderBy('id', $sortOrder);
             }
-        
+
             // Get total count before pagination
             $total = $query->count();
-        
+
             // Apply pagination
             $applicantDetail = $query->skip(($page - 1) * $limit)
                 ->take($limit)
@@ -78,7 +80,7 @@ class DashboardController extends Controller
                         'status' => $applicant->form_status_status, // Include only status value
                     ];
                 });
-        
+
             // Prepare the response
             $response = [
                 'data' => $applicantDetail,
@@ -87,10 +89,10 @@ class DashboardController extends Controller
                 'per_page' => $limit,
                 'last_page' => ceil($total / $limit),
             ];
-        
+
             // Return a success response with the data
             return ApiResponse::success('Data retrieved successfully', $response);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             // Return an error response if something goes wrong
             return ApiResponse::error($e->getMessage());
         }
@@ -99,10 +101,10 @@ class DashboardController extends Controller
     {
         try {
             $years = ApplicantDetail::select(DB::raw('YEAR(created_at) as year'))
-            ->groupBy('year')
-            ->orderBy('year', 'desc')
-            ->pluck('year');
-           
+                ->groupBy('year')
+                ->orderBy('year', 'desc')
+                ->pluck('year');
+
             return ApiResponse::success('Data retrieved successfully', $years);
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
@@ -112,14 +114,14 @@ class DashboardController extends Controller
     {
         try {
             $applicantDetail = ApplicantDetail::with('formPhoto', 'SpouseDetail', 'ChildDetail', 'formStatus')->find($id);
-
+            // return $applicantDetail->formStatus->status;
             // Check if the applicant detail exists
             if (!$applicantDetail) {
                 return response()->json(['message' => 'Applicant not found'], 404);
             }
-        
+
             $nullKeys = [];
-        
+
             // Check each property and add the key to the array if it is null
             if (is_null($applicantDetail->education_level)) {
                 $nullKeys[] = 'education';
@@ -136,34 +138,39 @@ class DashboardController extends Controller
             if (is_null($applicantDetail->children_info)) {
                 $nullKeys[] = 'children';
             }
-            if (empty($applicantDetail->spouse_detail)) {
+            if (empty($applicantDetail->SpouseDetail)) {
                 $nullKeys[] = 'spouse-info';
             }
             if (!is_null($applicantDetail->children_info) && is_int($applicantDetail->children_info)) {
-                $childDetails = is_array($applicantDetail->child_detail) ? $applicantDetail->child_detail : [];
-            
-                for ($i = 0; $i <= $applicantDetail->children_info; $i++) {
+                // Convert the ChildDetail collection to an array of records
+                $childDetails = $applicantDetail->ChildDetail->toArray();
+
+                // Ensure you loop correctly over the number of expected children
+                for ($i = 0; $i < $applicantDetail->children_info; $i++) {
                     if (!isset($childDetails[$i]) || is_null($childDetails[$i])) {
-                        $nullKeys[] = 'child/'.($i + 1);
+                        $nullKeys[] = 'child/' . ($i + 1);
                     }
                 }
             }
-            if (empty($applicantDetail->form_photo)) {
+           
+            // Check if the main applicant has a photo
+            if ($applicantDetail->formPhoto->isEmpty()) {
                 $nullKeys[] = 'photo';
             }
-            if (is_null($applicantDetail->form_status)) {
-                $nullKeys[] = 'confirmation';
+           
+            if ($applicantDetail->formStatus->status == 'inprogress') {
+                $nullKeys[] = "submit-application";
             }
-        
+            if ($applicantDetail->formStatus->status == 'submitting') {
+                $nullKeys[] = "submit-application";
+            }
+
             // Return the array of null keys
             if (!empty($nullKeys)) {
                 return response()->json(['data' => $nullKeys]);
             }
-        
-            // If everything is filled, return a completion message or status
-            // return response()->json(['message' => 'All sections completed']);
-            return response()->json(['data' => $nullKeys]);
 
+            return response()->json(['data' => $nullKeys]);
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
         }

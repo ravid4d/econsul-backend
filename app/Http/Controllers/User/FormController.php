@@ -277,6 +277,7 @@ class FormController extends Controller
     public function photoUpdate(Request $request)
     {
         try {
+            // return $request->all();
             $validator = Validator::make($request->all(), [
                 // 'application_id' => 'required|exists:applicant_details,id',
                 'photos' => 'required|array',
@@ -325,6 +326,25 @@ class FormController extends Controller
             return ApiResponse::error($e->getMessage());
         }
     }
+    public function Submission(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'application_id' => 'required|exists:applicant_details,id'
+            ]);
+
+            if ($validator->fails()) {
+                return ApiResponse::error("Validation Error!", $validator->errors());
+            }
+            FormStatus::updateOrCreate(
+                ['applicant_detail_id' => $request->application_id],  // Match on this condition
+                ['status' => 'submitting']  // Update with this value
+            );
+            return ApiResponse::success('Form is submitted successfully!');
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage());
+        }
+    }
     public function finalSubmission(Request $request)
     {
         try {
@@ -335,7 +355,10 @@ class FormController extends Controller
             if ($validator->fails()) {
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
-            FormStatus::create(["applicant_detail_id" => $request->application_id, "status" => "submitting"]);
+            FormStatus::updateOrCreate(
+                ['applicant_detail_id' => $request->application_id],  // Match on this condition
+                ['status' => 'confirmed']  // Update with this value
+            );
             return ApiResponse::success('Form is submitted successfully!');
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
