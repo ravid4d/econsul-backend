@@ -292,13 +292,13 @@ class FormController extends Controller
                 $hasEphotoLink = array_key_exists('ephoto_link', $photo);
                 $hasImageUrl = $request->hasFile("photos.$index.image");
 
-                if (!$hasEphotoLink && !$hasImageUrl) {
-                    return ApiResponse::error('Either ephoto_link or image must be provided for each photo.');
-                }
+                // if (!$hasEphotoLink && !$hasImageUrl) {
+                //     return ApiResponse::error('Either ephoto_link or image must be provided for each photo.');
+                // }
 
-                if ($hasEphotoLink && $hasImageUrl) {
-                    return ApiResponse::error('Only one of ephoto_link or image can be provided for each photo.');
-                }
+                // if ($hasEphotoLink && $hasImageUrl) {
+                //     return ApiResponse::error('Only one of ephoto_link or image can be provided for each photo.');
+                // }
 
                 $originalFileName = null;
                 $imageUrl = null;
