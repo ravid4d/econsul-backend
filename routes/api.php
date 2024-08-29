@@ -49,6 +49,7 @@ Route::prefix('user')->middleware('auth:sanctum')->group(function () {
         Route::get('/child/detail', 'childDetail');
         Route::get('/{id}/child/show', 'showChildDetail');
         Route::get('/applicant/{id}/photo', 'applicantPhoto');
+        Route::get('/{id}/form/submition', 'formSubmition');
     });
 
     Route::controller(App\Http\Controllers\User\PutFormController::class)->group(function () {

@@ -59,21 +59,6 @@ class GetFormController extends Controller
         return ApiResponse::success('Data retrieved successfully', $spouseDetail);
     }
 
-    // public function childDetail()
-    // {
-    //     try {
-
-    //         $childDetail = ChildDetail::all();
-
-    //         // Return a success response with the data
-    //         return ApiResponse::success('Data retrieved successfully', $childDetail);
-    //     } catch (\Exception $e) {
-    //         Log::error('Error retrieving child details: ' . $e->getMessage());
-
-    //         // Return an error response if something goes wrong
-    //         return ApiResponse::error($e->getMessage());
-    //     }
-    // }
     public function showChildDetail($id)
     {
         // Retrieve the applicant detail based on the $id
@@ -94,9 +79,18 @@ class GetFormController extends Controller
             // Return a success response with the data
             return ApiResponse::success('Data retrieved successfully', $photoDetail);
         } catch (\Exception $e) {
-            \Log::error('Error retrieving child details: ' . $e->getMessage());
+            return ApiResponse::error($e->getMessage());
+        }
+    }
+    public function formSubmition($id)
+    {
+        try {
 
-            // Return an error response if something goes wrong
+            $status = FormStatus::where("applicant_detail_id", $id)->select('status')->first();
+
+            // Return a success response with the data
+            return ApiResponse::success('Data retrieved successfully', $status);
+        } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
         }
     }
