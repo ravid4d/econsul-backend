@@ -9,6 +9,7 @@ use App\Helpers\ApiResponse;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use App\Services\OtpService;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -74,8 +75,8 @@ class AuthController extends Controller
                 ]);
             }
             // Generate OTP
-            // $otp = rand(100000, 999999);
-            $otp = '111111';
+            $otp = rand(100000, 999999);
+            // $otp = '111111';
             $msg = "Your verification code is $otp. Use this code to complete your login. Do not share this code with anyone. The code will expire in 10 minutes.";
             $response = OtpService::sendOtp($mobileNumber, $msg);
             // Check if OTP was sent successfully
@@ -140,5 +141,14 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return ApiResponse::success('Successfully logged out');
+    }
+    public function check(Request $request)
+    {
+        $data="Hii ravi";
+        $send = Mail::send('email.verify', ['msg' => $data], function ($message){
+            $message->to('ravichaudhary.d4d@gmail.com');
+            $message->subject('Autummn Equinox Message');
+        });
+        return "successfully installed!";
     }
 }

@@ -145,8 +145,8 @@ class ProfileController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
 
-            // $code = rand(100000, 999999);
-            $code = '111111';
+            $code = rand(100000, 999999);
+            // $code = '111111';
             $msg = "Your verification code is $code. Use this to change  your mobile number. Do not share this code with anyone. The code will expire in 10 minutes.";
             $response = OtpService::sendOtp($request->mobile_number, $msg);
             $user = $request->user();
