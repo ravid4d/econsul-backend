@@ -357,7 +357,7 @@ class FormController extends Controller
             }
             FormStatus::updateOrCreate(
                 ['applicant_detail_id' => $request->application_id],  // Match on this condition
-                ['status' => 'confirmed']  // Update with this value
+                ['status' => 'submitting']  // Update with this value
             );
             return ApiResponse::success('Form is submitted successfully!');
         } catch (\Exception $e) {

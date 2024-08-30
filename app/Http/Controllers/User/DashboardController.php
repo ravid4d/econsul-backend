@@ -162,8 +162,12 @@ class DashboardController extends Controller
                 $nullKeys[] = "submit-application";
             }
             if ($applicantDetail->formStatus->status == 'submitting') {
-                $nullKeys[] = "submit-application";
+                $nullKeys[] = "submitted";
             }
+            if ($applicantDetail->formStatus->status == 'confirmed') {
+                $nullKeys[] = "submitted";
+            }
+
 
             // Return the array of null keys
             if (!empty($nullKeys)) {
