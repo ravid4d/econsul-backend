@@ -19,7 +19,6 @@ class PutFormController extends Controller
             $validator = Validator::make($request->all(), [
                 'id' => 'required|exists:child_details,id', 
                 'first_name' => 'required',
-                'middle_name' => 'required',
                 'birth_date' => 'required|date',
                 'country' => 'required',
                 'city' => 'required',
