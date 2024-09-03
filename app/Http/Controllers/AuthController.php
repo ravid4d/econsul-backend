@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use App\Services\OtpService;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -46,7 +47,7 @@ class AuthController extends Controller
                 $data['name'] = $newUser->name;
                 $data['surname'] = $newUser->surname;
                 $data['email'] = $newUser->email;
-                $data['profile_picture'] = $newUser->profile_picture;
+                $data['profile_picture'] = Storage::url($newUser->profile_picture);
                 $data['mobile_number'] = $newUser->mobile_number;
             }
             return ApiResponse::success("Logged in Successfully!", $data);
@@ -128,7 +129,7 @@ class AuthController extends Controller
             $user->save();
 
             // return response()->json(['token' => $token]);
-            return ApiResponse::success("Logged in Successfully!", ['authToken' => $token, 'name' => $user->name, 'surname' => $user->surname, 'email' => $user->email, 'mobile_number' => $user->mobile_number, 'profile_picture' => $user->profile_picture]);
+            return ApiResponse::success("Logged in Successfully!", ['authToken' => $token, 'name' => $user->name, 'surname' => $user->surname, 'email' => $user->email, 'mobile_number' => $user->mobile_number, 'profile_picture' => Storage::url($user->profile_picture)]);
 
 
         } catch (\Exception $e) {
