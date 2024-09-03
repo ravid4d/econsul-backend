@@ -8,7 +8,8 @@ use App\Helpers\ApiResponse;
 use App\Models\{ApplicantDetail, SpouseDetail, ChildDetail, PhotoDetail, FormStatus}; // Import the PDF facade
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
-
+use Illuminate\Support\Facades\Storage;
+use ZipArchive;
 use Illuminate\Support\Facades\DB;
 
 
@@ -184,25 +185,47 @@ class DashboardController extends Controller
     public function idDashboardPDF(Request $request)
     {
         try {
-            // Retrieve the IDs from the request
+            
             $ids = $request->input('applicantsId', []);
 
             if (empty($ids)) {
                 return ApiResponse::error('No IDs provided');
             }
-
-            // Fetch applicant details
+            
             $applicantDetails = ApplicantDetail::with('formStatus')->whereIn('id', $ids)->get();
-
+            
             if ($applicantDetails->isEmpty()) {
                 return ApiResponse::error('No applicant details found');
             }
+           
+            $temporaryDir = storage_path('app/public/tmp_pdfs');
+            Storage::makeDirectory('public/tmp_pdfs');
+            
+            $pdfFiles = [];
+            
+            foreach ($applicantDetails as $applicantDetail) {
+                $pdf = PDF::loadView('user_pdf', ['detail' => $applicantDetail]);
+                $pdfFileName = 'applicant_' . $applicantDetail->id . '.pdf';
+                $pdfFilePath = $temporaryDir . '/' . $pdfFileName;
+                $pdf->save($pdfFilePath);
+                $pdfFiles[] = $pdfFilePath;
+            }
+          
+            $zipFileName = 'applicants_pdfs.zip';
+            $zipFilePath = storage_path('app/public/' . $zipFileName);
+            
+            $zip = new ZipArchive();
+            if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+                foreach ($pdfFiles as $file) {
+                    $zip->addFile($file, basename($file));
+                }
+                $zip->close();
+            }
+            
+            Storage::deleteDirectory('public/tmp_pdfs');
+            
+            return response()->download($zipFilePath)->deleteFileAfterSend(true);
 
-            // Generate PDF with all applicant details
-            $pdf = PDF::loadView('user_pdf', ['applicantDetail' => $applicantDetails]);
-
-            // Return PDF as a download response
-            return $pdf->download('combined_applicants.pdf');
         } catch (Exception $e) {
             return ApiResponse::error($e->getMessage());
         }
