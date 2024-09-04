@@ -61,7 +61,7 @@
 <body>
     <div class="email-container">
         <div class="email-header">
-            <img src="{{ asset('images/e-consul-logo.svg') }}" alt="Logo"> <!-- Adjust path as needed -->
+            {{-- <img src="{{ asset('images/e-consul-logo.svg') }}" alt="Logo"> <!-- Adjust path as needed --> --}}
             <h1>Welcome to Our Service!</h1>
         </div>
         <div class="email-body">
