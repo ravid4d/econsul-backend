@@ -117,7 +117,7 @@ class DashboardController extends Controller
             $applicantDetail = ApplicantDetail::with('formPhoto', 'SpouseDetail', 'ChildDetail', 'formStatus')->find($id);
             // return $applicantDetail->formStatus->status;
             // Check if the applicant detail exists
-            return ["details"=> $applicantDetail->spouse_info->maritalStatus];
+            return ["details"=> $applicantDetail->spouse_info['maritalStatus']];
             if (!$applicantDetail) {
                 return response()->json(['message' => 'Applicant not found'], 404);
             }
