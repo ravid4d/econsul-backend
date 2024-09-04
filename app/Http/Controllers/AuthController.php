@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Services\OtpService;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use App\Mail\VerifyMail;
 
 class AuthController extends Controller
 {
@@ -145,11 +146,9 @@ class AuthController extends Controller
     }
     public function check(Request $request)
     {
-        $data="Hii ravi";
-        $send = Mail::send('email.verify', ['msg' => $data], function ($message){
-            $message->to('ravichaudhary.d4d@gmail.com');
-            $message->subject('Autummn Equinox Message');
-        });
-        return "successfully installed!";
+        // $data="Hii ravi";
+        // $code = 111111;
+        // Mail::to('ravichaudhary.d4d@gmail.com')->send(new VerifyMail($code));
+        // return "successfully installed!";
     }
 }

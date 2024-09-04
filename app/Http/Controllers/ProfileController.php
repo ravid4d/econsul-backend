@@ -8,6 +8,8 @@ use App\Helpers\ApiResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use App\Services\OtpService;
+use App\Mail\VerifyMail;
+use Illuminate\Support\Facades\Mail;
 
 class ProfileController extends Controller
 {
@@ -82,9 +84,10 @@ class ProfileController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
 
-            // $code = rand(100000, 999999);
+            $code = rand(100000, 999999);
+            Mail::to($request->email)->send(new VerifyMail($code));
 
-            $code = '111111';
+            // $code = '111111';
             // $email = $request->email;
             VerifyEmailCode::updateOrCreate(
                 ["user_id" => $request->user()->id, "email" => $request->email],
