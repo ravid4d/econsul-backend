@@ -117,7 +117,6 @@ class DashboardController extends Controller
             $applicantDetail = ApplicantDetail::with('formPhoto', 'SpouseDetail', 'ChildDetail', 'formStatus')->find($id);
             // return $applicantDetail->formStatus->status;
             // Check if the applicant detail exists
-            return ["details"=> $applicantDetail->spouse_info['maritalStatus']];
             if (!$applicantDetail) {
                 return response()->json(['message' => 'Applicant not found'], 404);
             }
@@ -142,7 +141,10 @@ class DashboardController extends Controller
             }
             if (!is_null($applicantDetail->spouse_info)) {
                 if (empty($applicantDetail->SpouseDetail)) {
+                    if($applicantDetail->spouse_info['maritalStatus'] == "Married and my spouse is NOT a U.S. citizen or U.S. Lawful Permanent Resident (LPR)")
+                    {
                     $nullKeys[] = 'spouse-info';
+                    }
                 }
             }
             if (!is_null($applicantDetail->children_info) && is_int($applicantDetail->children_info)) {
