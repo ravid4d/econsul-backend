@@ -117,6 +117,7 @@ class DashboardController extends Controller
             $applicantDetail = ApplicantDetail::with('formPhoto', 'SpouseDetail', 'ChildDetail', 'formStatus')->find($id);
             // return $applicantDetail->formStatus->status;
             // Check if the applicant detail exists
+            return ["details"=> $applicantDetail->spouse_info];
             if (!$applicantDetail) {
                 return response()->json(['message' => 'Applicant not found'], 404);
             }
@@ -139,8 +140,10 @@ class DashboardController extends Controller
             if (is_null($applicantDetail->children_info)) {
                 $nullKeys[] = 'children';
             }
-            if (empty($applicantDetail->SpouseDetail)) {
-                $nullKeys[] = 'spouse-info';
+            if (!is_null($applicantDetail->spouse_info)) {
+                if (empty($applicantDetail->SpouseDetail)) {
+                    $nullKeys[] = 'spouse-info';
+                }
             }
             if (!is_null($applicantDetail->children_info) && is_int($applicantDetail->children_info)) {
                 // Convert the ChildDetail collection to an array of records
@@ -153,12 +156,12 @@ class DashboardController extends Controller
                     }
                 }
             }
-           
+
             // Check if the main applicant has a photo
             if ($applicantDetail->formPhoto->isEmpty()) {
                 $nullKeys[] = 'photo';
             }
-           
+
             if ($applicantDetail->formStatus->status == 'inprogress') {
                 $nullKeys[] = "submit-application";
             }
@@ -185,24 +188,24 @@ class DashboardController extends Controller
     public function idDashboardPDF(Request $request)
     {
         try {
-            
+
             $ids = $request->input('applicantsId', []);
 
             if (empty($ids)) {
                 return ApiResponse::error('No IDs provided');
             }
-            
+
             $applicantDetails = ApplicantDetail::with('formStatus')->whereIn('id', $ids)->get();
-            
+
             if ($applicantDetails->isEmpty()) {
                 return ApiResponse::error('No applicant details found');
             }
-           
+
             $temporaryDir = storage_path('app/public/tmp_pdfs');
             Storage::makeDirectory('public/tmp_pdfs');
-            
+
             $pdfFiles = [];
-            
+
             foreach ($applicantDetails as $applicantDetail) {
                 $pdf = PDF::loadView('user_pdf', ['detail' => $applicantDetail]);
                 $pdfFileName = 'applicant_' . $applicantDetail->id . '.pdf';
@@ -210,10 +213,10 @@ class DashboardController extends Controller
                 $pdf->save($pdfFilePath);
                 $pdfFiles[] = $pdfFilePath;
             }
-          
+
             $zipFileName = 'applicants_pdfs.zip';
             $zipFilePath = storage_path('app/public/' . $zipFileName);
-            
+
             $zip = new ZipArchive();
             if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
                 foreach ($pdfFiles as $file) {
@@ -221,9 +224,9 @@ class DashboardController extends Controller
                 }
                 $zip->close();
             }
-            
+
             Storage::deleteDirectory('public/tmp_pdfs');
-            
+
             return response()->download($zipFilePath)->deleteFileAfterSend(true);
 
         } catch (Exception $e) {

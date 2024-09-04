@@ -22,8 +22,6 @@ Route::prefix('user')->middleware('auth:sanctum')->group(function () {
         Route::get('/applicant/year', 'ApplicantYear');
         Route::get('/applicant/{id}/dashboard', 'ApplicantDetailDashboard');
         Route::post('/applicant-details/pdf', 'idDashboardPDF');
-
-
     });
 
     Route::controller(App\Http\Controllers\User\FormController::class)->group(function () {
