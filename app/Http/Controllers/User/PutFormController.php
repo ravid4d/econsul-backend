@@ -30,13 +30,11 @@ class PutFormController extends Controller
             $childDetail = ChildDetail::findOrFail($request->id);
     
             $childDetail->update([
-                'name' => $request->first_name,
+                'first_name' => $request->first_name,
                 'middle_name' => $request->middle_name,
+                'surname'=>$request->surname,
                 'birth_date' => $request->birth_date,
                 'gender' => $request->gender,
-
-
-                
                 'country' => $request->country,
                 'city' => $request->city,
             ]);
