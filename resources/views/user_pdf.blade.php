@@ -139,20 +139,40 @@
             width: 100%;
             display: block;
         }
+
+        .no-page-break {
+            page-break-inside: avoid;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #ccc;
+        }
+       
+        .header .logo {
+            width: 150px; / Adjust the width as needed /
+        }
     </style>
 </head>
 
 <body>
     <div class="showFormFields">
         <div class="row">
+            <div class="header">
+                <div class="logo">
+                    <img src="{{ public_path('/images/e-consul-logo.svg') }}" alt="Logo" style="width: 100%;">
+                </div>
+            </div>
             <div class="col-lg-12 fullWithCol">
                 <div class="titleBlock">
-                    <h6 class="heading h6 mainTopHeading">Submit Application</h6>
+                    <h6 class="heading h6 mainTopHeading">DV-Lottery 2025</h6>
                 </div>
 
                 <div class="textBlock">
-                    <p>Confirm that information provided is correct. If you need to go back and make a correction, do
-                        NOT use the back button on your browser. Instead use the appropriate EDIT button below:</p>
+                    <p>App Id: {{ $detail['id'] }} </p> 
+                    <p>Created At: {{ $detail['created_at'] }} </p>
                 </div>
             </div>
         </div>
@@ -164,7 +184,7 @@
                         <span class="heading mainTopHeading">Part One - Entrant Information</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">1. Name</span>
                         <ol type="a">
                             <li>
@@ -182,40 +202,40 @@
                         </ol>
                     </div>
 
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">2. Gender</span>
                         <span class="singleData">{{ $detail['personal_info']['gender'] ?? 'N/A' }}</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">3. Birth Date</span>
                         <span class="singleData">{{ $detail['personal_info']['birth_date'] ?? 'N/A' }}</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">4. City Where You Were Born</span>
                         <span class="singleData">{{ $detail['eligibility_status']['city'] ?? 'N/A' }}</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">5. Country Where You Were Born</span>
                         <span class="singleData">{{ $detail['eligibility_status']['born_country'] ?? 'N/A' }}</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">6. Country of Eligibility for the DV Program</span>
                         <span class="singleData">{{ $detail['eligibility_status']['live_country'] ?? 'N/A' }}</span>
                     </div>
 
                     {{-- Uncomment this block if needed --}}
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">7. Entrant Photograph</span>
                         <span class="singleData">
                             {{ isset($detail['photos']['applicant']) ? '(Photograph received)' : '' }}
                         </span>
                     </div>
 
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">8. Mailing Address</span>
                         <ol type="a">
                             <li>
@@ -245,25 +265,25 @@
                         </ol>
                     </div>
 
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">9. Country Where You Live Today</span>
                         <span
                             class="singleData">{{ $detail['eligibility_status']['residence_country'] ?? 'N/A' }}</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">10. Phone Number</span>
                         <span class="singleData">{{ $detail['contact_info']['phone'] ?? 'N/A' }}</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">11. E-mail Address</span>
                         <span class="singleData">{{ $detail['contact_info']['email'] ?? 'N/A' }}</span>
                         <span class="singleData">(NOTE: This E-mail address will be used to provide you with
                             additional information if you are selected.)</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">12. What is the highest level of education you have achieved, as of
                             today?</span>
                         <span class="singleData">{{ $detail['education_level'] ?? 'N/A' }}</span>
@@ -274,7 +294,7 @@
                             see if your occupation qualifies) for a Diversity Visa</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">13. What is your current marital status?</span>
                         <span class="singleData">{{ $detail['spouse_info']['maritalStatus'] ?? 'N/A' }}</span>
                         <span class="singleData">Legal separation is an arrangement when a couple remains married but
@@ -289,7 +309,7 @@
                             not list him/her in your entry.</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock no-page-break">
                         <span class="heading">14. Number of Children</span>
                         <span class="singleData">{{ $detail['children_info'] ?? 'N/A' }}</span>
                         <span class="singleData">Children include all biological children, legally adopted children,
@@ -310,8 +330,8 @@
                         <span class="heading mainTopHeading">Part Two - Derivatives</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
-                        <span class="heading">13. Spouse Name</span>
+                    <div class="confirmationDataBlock no-page-break">
+                        <span class="heading">15. Spouse Name</span>
                         <ol type="a">
                             <li>
                                 <span>Last / Family Name</span>
@@ -328,40 +348,45 @@
                         </ol>
                     </div>
 
-                    <div class="confirmationDataBlock">
-                        <span class="heading">14. Spouse Gender</span>
+                    <div class="confirmationDataBlock no-page-break">
+                        <span class="heading">16. Spouse Gender</span>
                         <span class="singleData">{{ $detail['SpouseDetail']['gender'] ?? 'N/A' }}</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
-                        <span class="heading">15. Spouse Birth Date</span>
+                    <div class="confirmationDataBlock no-page-break">
+                        <span class="heading">17. Spouse Birth Date</span>
                         <span class="singleData">{{ $detail['SpouseDetail']['birth_date'] ?? 'N/A' }}</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
-                        <span class="heading">16. Spouse Birth City</span>
+                    <div class="confirmationDataBlock no-page-break">
+                        <span class="heading">18. Spouse Birth City</span>
                         <span class="singleData">{{ $detail['SpouseDetail']['city'] ?? 'N/A' }}</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
-                        <span class="heading">17. Spouse Birth Country</span>
+                    <div class="confirmationDataBlock no-page-break">
+                        <span class="heading">19. Spouse Birth Country</span>
                         <span class="singleData">{{ $detail['SpouseDetail']['country'] ?? 'N/A' }}</span>
                     </div>
 
-                    <div class="confirmationDataBlock">
-                        <span class="heading">18. Spouse Photograph</span>
+                    <div class="confirmationDataBlock no-page-break">
+                        <span class="heading">20. Spouse Photograph</span>
                         <span
                             class="singleData">{{ isset($detail['photos']['spouse']) ? '(Photograph received)' : 'N/A' }}</span>
                     </div>
-
+                   
+                    @if (!empty($detail['ChildDetail']))
+                    @foreach ($detail['ChildDetail'] as $index => $child)
+                    @php
+                    $baseNumber = 21; // Starting number for child details
+                    $currentNumber = $baseNumber + $index;
+                @endphp
                     <div class="titleBlock">
-                        <span class="heading mainTopHeading">Children</span>
+                        <span class="heading mainTopHeading">Child {{$index+1}}</span>
                     </div>
 
-                    @if (!empty($detail['ChildDetail']))
-                        @foreach ($detail['ChildDetail'] as $index => $child)
-                            <div class="confirmationDataBlock">
-                                <span class="heading">Child Name</span>
+                   
+                            <div class="confirmationDataBlock no-page-break">
+                                <span class="heading">{{ $currentNumber}}. Child Name</span>
                                 <ol type="a">
                                     <li>
                                         <span>Last / Family Name</span>
@@ -378,35 +403,35 @@
                                 </ol>
                             </div>
 
-                            <div class="confirmationDataBlock">
-                                <span class="heading">Child Gender</span>
+                            <div class="confirmationDataBlock no-page-break">
+                                <span class="heading">{{ $currentNumber + 1 }}. Child Gender</span>
                                 <span class="singleData">{{ $child['gender'] ?? 'N/A' }}</span>
                             </div>
 
-                            <div class="confirmationDataBlock">
-                                <span class="heading">Child Birth Date</span>
+                            <div class="confirmationDataBlock no-page-break">
+                                <span class="heading">{{ $currentNumber + 2 }}. Child Birth Date</span>
                                 <span class="singleData">{{ $child['birth_date'] ?? 'N/A' }}</span>
                             </div>
 
-                            <div class="confirmationDataBlock">
-                                <span class="heading">Child Birth City</span>
+                            <div class="confirmationDataBlock no-page-break">
+                                <span class="heading">{{ $currentNumber + 3 }}. Child Birth City</span>
                                 <span class="singleData">{{ $child['city'] ?? 'N/A' }}</span>
                             </div>
 
-                            <div class="confirmationDataBlock">
-                                <span class="heading">Child Birth Country</span>
+                            <div class="confirmationDataBlock no-page-break">
+                                <span class="heading">{{ $currentNumber + 4 }}. Child Birth Country</span>
                                 <span class="singleData">{{ $child['country'] ?? 'N/A' }}</span>
                             </div>
 
-                            <div class="confirmationDataBlock">
-                                <span class="heading">Child Photograph</span>
+                            <div class="confirmationDataBlock no-page-break">
+                                <span class="heading">{{ $currentNumber + 5 }}. Child Photograph</span>
                                 <span class="singleData">
                                     {{ isset($detail['children'][$index + 1]['photo']) ? '(Photograph received)' : 'N/A' }}
                                 </span>
                             </div>
                         @endforeach
                     @else
-                        <div class="confirmationDataBlock">
+                        <div class="confirmationDataBlock no-page-break">
                             <span class="heading">No children added.</span>
                         </div>
                     @endif
