@@ -18,9 +18,11 @@
             margin: 0 0 15px 0;
             font-family: "Open Sans", sans-serif;
         }
+
         .confirmInformationBlock {
             max-width: 100%;
         }
+
         .showFormFields .fullWithCol {
             display: flex;
             flex-direction: column;
@@ -33,8 +35,14 @@
             flex-direction: column;
             /* gap: 20px; */
         }
-        .showFormFields .titleBlock span {display: block; text-align: center; margin-bottom: 20px; margin-top: 35px;}
-        
+
+        .showFormFields .titleBlock span {
+            display: block;
+            text-align: center;
+            margin-bottom: 20px;
+            margin-top: 35px;
+        }
+
         .showFormFields .textBlock {
             width: 100%;
             display: flex;
@@ -105,20 +113,26 @@
             font-size: 12px;
             line-height: 14px;
         }
-        .confirmationDataBlock .singleData {margin-bottom: 10px;}
+
+        .confirmationDataBlock .singleData {
+            margin-bottom: 10px;
+        }
 
         .confirmationDataBlock ol {
             font-size: 12px;
             line-height: 14px;
             color: rgba(0, 0, 0, 1);
             display: flex;
-            flex-direction: column;            
+            flex-direction: column;
             /* gap: 10px; */
             padding: 0 0 0 18px;
             list-style: lower-alpha;
             margin: 0;
         }
-        .confirmationDataBlock ol li{margin-bottom: 10px;}
+
+        .confirmationDataBlock ol li {
+            margin-bottom: 10px;
+        }
 
         .confirmationDataBlock ol li span {
             clear: both;
@@ -194,12 +208,12 @@
                     </div>
 
                     {{-- Uncomment this block if needed --}}
-                    {{-- <div class="confirmationDataBlock">
+                    <div class="confirmationDataBlock">
                         <span class="heading">7. Entrant Photograph</span>
                         <span class="singleData">
-                            {{ hasPhotograph('applicant') ? "(Photograph received)" : "" }}
+                            {{ isset($detail['photos']['applicant']) ? '(Photograph received)' : '' }}
                         </span>
-                    </div> --}}
+                    </div>
 
                     <div class="confirmationDataBlock">
                         <span class="heading">8. Mailing Address</span>
@@ -301,51 +315,51 @@
                         <ol type="a">
                             <li>
                                 <span>Last / Family Name</span>
-                                <span>{{ $detail['spouse_detail']['surname'] ?? 'N/A' }}</span>
+                                <span>{{ $detail['SpouseDetail']['surname'] ?? 'N/A' }}</span>
                             </li>
                             <li>
                                 <span>First Name</span>
-                                <span>{{ $detail['spouse_detail']['first_name'] ?? 'N/A' }}</span>
+                                <span>{{ $detail['SpouseDetail']['first_name'] ?? 'N/A' }}</span>
                             </li>
                             <li>
                                 <span>Middle Name</span>
-                                <span>{{ $detail['spouse_detail']['middle_name'] ?? 'N/A' }}</span>
+                                <span>{{ $detail['SpouseDetail']['middle_name'] ?? 'N/A' }}</span>
                             </li>
                         </ol>
                     </div>
 
                     <div class="confirmationDataBlock">
                         <span class="heading">14. Spouse Gender</span>
-                        <span class="singleData">{{ $detail['spouse_detail']['gender'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{ $detail['SpouseDetail']['gender'] ?? 'N/A' }}</span>
                     </div>
 
                     <div class="confirmationDataBlock">
                         <span class="heading">15. Spouse Birth Date</span>
-                        <span class="singleData">{{ $detail['spouse_detail']['birth_date'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{ $detail['SpouseDetail']['birth_date'] ?? 'N/A' }}</span>
                     </div>
 
                     <div class="confirmationDataBlock">
                         <span class="heading">16. Spouse Birth City</span>
-                        <span class="singleData">{{ $detail['spouse_detail']['birth_city'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{ $detail['SpouseDetail']['city'] ?? 'N/A' }}</span>
                     </div>
 
                     <div class="confirmationDataBlock">
                         <span class="heading">17. Spouse Birth Country</span>
-                        <span class="singleData">{{ $detail['spouse_detail']['birth_country'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{ $detail['SpouseDetail']['country'] ?? 'N/A' }}</span>
                     </div>
 
                     <div class="confirmationDataBlock">
                         <span class="heading">18. Spouse Photograph</span>
                         <span
-                            class="singleData">{{ isset($detail['spouse_detail']['photograph']) ? '(Photograph received)' : 'N/A' }}</span>
+                            class="singleData">{{ isset($detail['photos']['spouse']) ? '(Photograph received)' : 'N/A' }}</span>
                     </div>
 
                     <div class="titleBlock">
                         <span class="heading mainTopHeading">Children</span>
                     </div>
 
-                    @if (!empty($detail['child_detail']))
-                        @foreach ($detail['child_detail'] as $child)
+                    @if (!empty($detail['ChildDetail']))
+                        @foreach ($detail['ChildDetail'] as $index => $child)
                             <div class="confirmationDataBlock">
                                 <span class="heading">Child Name</span>
                                 <ol type="a">
@@ -376,18 +390,19 @@
 
                             <div class="confirmationDataBlock">
                                 <span class="heading">Child Birth City</span>
-                                <span class="singleData">{{ $child['birth_city'] ?? 'N/A' }}</span>
+                                <span class="singleData">{{ $child['city'] ?? 'N/A' }}</span>
                             </div>
 
                             <div class="confirmationDataBlock">
                                 <span class="heading">Child Birth Country</span>
-                                <span class="singleData">{{ $child['birth_country'] ?? 'N/A' }}</span>
+                                <span class="singleData">{{ $child['country'] ?? 'N/A' }}</span>
                             </div>
 
                             <div class="confirmationDataBlock">
                                 <span class="heading">Child Photograph</span>
-                                <span
-                                    class="singleData">{{ isset($child['photograph']) ? '(Photograph received)' : 'N/A' }}</span>
+                                <span class="singleData">
+                                    {{ isset($detail['children'][$index + 1]['photo']) ? '(Photograph received)' : 'N/A' }}
+                                </span>
                             </div>
                         @endforeach
                     @else
@@ -395,6 +410,7 @@
                             <span class="heading">No children added.</span>
                         </div>
                     @endif
+
                 </div>
             </div>
         </div>

@@ -153,12 +153,12 @@ class DashboardController extends Controller
                     }
                 }
             }
-           
+
             // Check if the main applicant has a photo
             if ($applicantDetail->formPhoto->isEmpty()) {
                 $nullKeys[] = 'photo';
             }
-           
+
             if ($applicantDetail->formStatus->status == 'inprogress') {
                 $nullKeys[] = "submit-application";
             }
@@ -185,24 +185,68 @@ class DashboardController extends Controller
     public function idDashboardPDF(Request $request)
     {
         try {
-            
+
             $ids = $request->input('applicantsId', []);
 
             if (empty($ids)) {
                 return ApiResponse::error('No IDs provided');
             }
-            
-            $applicantDetails = ApplicantDetail::with('formStatus')->whereIn('id', $ids)->get();
-            
+
+            $applicantDetails = ApplicantDetail::with('formStatus', 'SpouseDetail', 'formPhoto', 'ChildDetail')->whereIn('id',$ids)->whereHas('formStatus', function ($query) {
+                $query->where('status', 'confirmed');
+            })->get();
+            foreach ($applicantDetails as $applicant) {
+                $applicantPhotos = [
+                    'applicant' => null,
+                    'spouse' => null,
+                ];
+
+                foreach ($applicant->formPhoto as $photo) {
+                    if ($photo->photo_owner == 'applicant') {
+                        $applicantPhotos['applicant'] = $photo->image_url;
+                    } elseif ($photo->photo_owner == 'spouse') {
+                        $applicantPhotos['spouse'] = $photo->image_url;
+                    }
+                }
+                $applicant->photos = $applicantPhotos;
+            }
+
+            $childrenDetails = [];
+
+            // Loop through form photos to collect child photos
+            foreach ($applicant->formPhoto as $photo) {
+                if (strpos($photo->photo_owner, 'child') === 0) {
+                    // Extract child index from photo_owner
+                    $childIndex = str_replace('child', '', $photo->photo_owner);
+
+                    // Initialize child details if not already done
+                    if (!isset($childrenDetails[$childIndex])) {
+                        $childrenDetails[$childIndex] = [
+                            'photo' => null // Default to null in case no photo is found
+                        ];
+                    }
+
+                    // Assign photo URL to the corresponding child
+                    $childrenDetails[$childIndex]['photo'] = $photo->image_url;
+                }
+            }
+
+            // Assign children details to applicant
+            $applicant->children = $childrenDetails;
+
+            $applicant->children = $childrenDetails;
+
+            // return $applicantDetails[0];
+
             if ($applicantDetails->isEmpty()) {
                 return ApiResponse::error('No applicant details found');
             }
-           
+
             $temporaryDir = storage_path('app/public/tmp_pdfs');
             Storage::makeDirectory('public/tmp_pdfs');
-            
+
             $pdfFiles = [];
-            
+
             foreach ($applicantDetails as $applicantDetail) {
                 $pdf = PDF::loadView('user_pdf', ['detail' => $applicantDetail]);
                 $pdfFileName = 'applicant_' . $applicantDetail->id . '.pdf';
@@ -210,10 +254,10 @@ class DashboardController extends Controller
                 $pdf->save($pdfFilePath);
                 $pdfFiles[] = $pdfFilePath;
             }
-          
+
             $zipFileName = 'applicants_pdfs.zip';
             $zipFilePath = storage_path('app/public/' . $zipFileName);
-            
+
             $zip = new ZipArchive();
             if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
                 foreach ($pdfFiles as $file) {
@@ -221,11 +265,10 @@ class DashboardController extends Controller
                 }
                 $zip->close();
             }
-            
-            Storage::deleteDirectory('public/tmp_pdfs');
-            
-            return response()->download($zipFilePath)->deleteFileAfterSend(true);
 
+            Storage::deleteDirectory('public/tmp_pdfs');
+
+            return response()->download($zipFilePath)->deleteFileAfterSend(true);
         } catch (Exception $e) {
             return ApiResponse::error($e->getMessage());
         }

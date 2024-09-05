@@ -19,5 +19,8 @@ class SpouseDetail extends Model
         'country',
         'city'
     ];
-    
+    public function spousePhoto()
+    {
+        return $this->hasOne(PhotoDetail::class, 'applicant_id')->where('photo_type', 'spouse');
+    }
 }
