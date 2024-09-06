@@ -131,7 +131,7 @@ class AuthController extends Controller
 
 
         } catch (\Exception $e) {
-            return ApiResponse::error("Invalid token or Google authentication failed.", ["error_msg" => $e->getMessage()]);
+            return ApiResponse::error("Mobile login is failed", ["error_msg" => $e->getMessage()]);
         }
     }
     public function logout(Request $request)
