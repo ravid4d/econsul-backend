@@ -160,15 +160,20 @@
 <body>
     <div class="showFormFields">
         <div class="row">
-            <div class="header">
+            {{-- <div class="header">
                 <div class="logo">
                     <img src="{{ public_path('/images/e-consul-logo.svg') }}" alt="Logo" style="width: 100%;">
                 </div>
-            </div>
+            </div> --}}
             <div class="col-lg-12 fullWithCol">
+                <div class="logo" style="text-align:right; display:block">
+                    <img src="{{ public_path('/images/e-consul-logo.svg') }}" alt="Logo" style="min-width
+                    80px ,max-width: 100%;">
+                </div>
                 <div class="titleBlock">
                     <h6 class="heading h6 mainTopHeading">DV-Lottery 2025</h6>
                 </div>
+               
 
                 <div class="textBlock">
                     <p>App Id: {{ $detail['id'] }} </p> 
@@ -331,8 +336,8 @@
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
-                        <span class="heading">15. Spouse Name</span>
-                        <ol type="a">
+                        <span class="heading">13. Spouse Name</span>
+                        <ol>
                             <li>
                                 <span>Last / Family Name</span>
                                 <span>{{ $detail['SpouseDetail']['surname'] ?? 'N/A' }}</span>
@@ -349,27 +354,27 @@
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
-                        <span class="heading">16. Spouse Gender</span>
+                        <span class="heading">13d. Spouse Gender</span>
                         <span class="singleData">{{ $detail['SpouseDetail']['gender'] ?? 'N/A' }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
-                        <span class="heading">17. Spouse Birth Date</span>
+                        <span class="heading">13e. Spouse Birth Date</span>
                         <span class="singleData">{{ $detail['SpouseDetail']['birth_date'] ?? 'N/A' }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
-                        <span class="heading">18. Spouse Birth City</span>
+                        <span class="heading">13f. Spouse Birth City</span>
                         <span class="singleData">{{ $detail['SpouseDetail']['city'] ?? 'N/A' }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
-                        <span class="heading">19. Spouse Birth Country</span>
+                        <span class="heading">13g. Spouse Birth Country</span>
                         <span class="singleData">{{ $detail['SpouseDetail']['country'] ?? 'N/A' }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
-                        <span class="heading">20. Spouse Photograph</span>
+                        <span class="heading">13h. Spouse Photograph</span>
                         <span
                             class="singleData">{{ isset($detail['photos']['spouse']) ? '(Photograph received)' : 'N/A' }}</span>
                     </div>
@@ -377,7 +382,7 @@
                     @if (!empty($detail['ChildDetail']))
                     @foreach ($detail['ChildDetail'] as $index => $child)
                     @php
-                    $baseNumber = 21; // Starting number for child details
+                    $baseNumber = 14; // Starting number for child details
                     $currentNumber = $baseNumber + $index;
                 @endphp
                     <div class="titleBlock">
@@ -386,8 +391,8 @@
 
                    
                             <div class="confirmationDataBlock no-page-break">
-                                <span class="heading">{{ $currentNumber}}. Child Name</span>
-                                <ol type="a">
+                                <span class="heading">{{ $currentNumber}}. Child #{{$index+1}} Name</span>
+                                <ol>
                                     <li>
                                         <span>Last / Family Name</span>
                                         <span>{{ $child['surname'] ?? 'N/A' }}</span>
@@ -404,27 +409,27 @@
                             </div>
 
                             <div class="confirmationDataBlock no-page-break">
-                                <span class="heading">{{ $currentNumber + 1 }}. Child Gender</span>
+                                <span class="heading">{{ $currentNumber}}d. Child Gender</span>
                                 <span class="singleData">{{ $child['gender'] ?? 'N/A' }}</span>
                             </div>
 
                             <div class="confirmationDataBlock no-page-break">
-                                <span class="heading">{{ $currentNumber + 2 }}. Child Birth Date</span>
+                                <span class="heading">{{ $currentNumber}}e. Child Birth Date</span>
                                 <span class="singleData">{{ $child['birth_date'] ?? 'N/A' }}</span>
                             </div>
 
                             <div class="confirmationDataBlock no-page-break">
-                                <span class="heading">{{ $currentNumber + 3 }}. Child Birth City</span>
+                                <span class="heading">{{ $currentNumber}}f. Child Birth City</span>
                                 <span class="singleData">{{ $child['city'] ?? 'N/A' }}</span>
                             </div>
 
                             <div class="confirmationDataBlock no-page-break">
-                                <span class="heading">{{ $currentNumber + 4 }}. Child Birth Country</span>
+                                <span class="heading">{{ $currentNumber}}g. Child Birth Country</span>
                                 <span class="singleData">{{ $child['country'] ?? 'N/A' }}</span>
                             </div>
 
                             <div class="confirmationDataBlock no-page-break">
-                                <span class="heading">{{ $currentNumber + 5 }}. Child Photograph</span>
+                                <span class="heading">{{ $currentNumber}}h. Child Photograph</span>
                                 <span class="singleData">
                                     {{ isset($detail['children'][$index + 1]['photo']) ? '(Photograph received)' : 'N/A' }}
                                 </span>
