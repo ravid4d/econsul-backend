@@ -192,9 +192,7 @@ class DashboardController extends Controller
                 return ApiResponse::error('No IDs provided');
             }
 
-            $applicantDetails = ApplicantDetail::with('formStatus', 'SpouseDetail', 'formPhoto', 'ChildDetail')->whereIn('id',$ids)->whereHas('formStatus', function ($query) {
-                $query->where('status', 'confirmed');
-            })->get();
+            $applicantDetails = ApplicantDetail::with('formStatus', 'SpouseDetail', 'formPhoto', 'ChildDetail')->whereIn('id',$ids)->get();
             foreach ($applicantDetails as $applicant) {
                 $applicantPhotos = [
                     'applicant' => null,

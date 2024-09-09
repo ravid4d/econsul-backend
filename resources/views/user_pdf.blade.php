@@ -194,49 +194,49 @@
                         <ol type="a">
                             <li>
                                 <span>Last / Family Name</span>
-                                <span>{{ $detail['personal_info']['last_name'] ?? 'N/A' }}</span>
+                                <span>{{strtoupper($detail['personal_info']['last_name'] ?? 'N/A') }}</span>
                             </li>
                             <li>
                                 <span>First Name</span>
-                                <span>{{ $detail['personal_info']['first_name'] ?? 'N/A' }}</span>
+                                <span>{{ strtoupper($detail['personal_info']['first_name'] ?? 'N/A') }}</span>
                             </li>
                             <li>
                                 <span>Middle Name</span>
-                                <span>{{ $detail['personal_info']['middle_name'] ?? 'N/A' }}</span>
+                                <span>{{ strtoupper($detail['personal_info']['middle_name'] ?? 'N/A') }}</span>
                             </li>
                         </ol>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">2. Gender</span>
-                        <span class="singleData">{{ $detail['personal_info']['gender'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{ strtoupper($detail['personal_info']['gender'] ?? 'N/A') }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">3. Birth Date</span>
-                        <span class="singleData">{{ $detail['personal_info']['birth_date'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{  strtoupper($detail['personal_info']['birth_date'] ?? 'N/A') }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">4. City Where You Were Born</span>
-                        <span class="singleData">{{ $detail['eligibility_status']['city'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{  strtoupper($detail['eligibility_status']['city'] ?? 'N/A') }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">5. Country Where You Were Born</span>
-                        <span class="singleData">{{ $detail['eligibility_status']['born_country'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{  strtoupper($detail['eligibility_status']['born_country'] ?? 'N/A') }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">6. Country of Eligibility for the DV Program</span>
-                        <span class="singleData">{{ $detail['eligibility_status']['live_country'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{  strtoupper($detail['eligibility_status']['live_country'] ?? 'N/A') }}</span>
                     </div>
 
                     {{-- Uncomment this block if needed --}}
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">7. Entrant Photograph</span>
                         <span class="singleData">
-                            {{ isset($detail['photos']['applicant']) ? '(Photograph received)' : '' }}
+                            {{ isset($detail['photos']['applicant']) ? '(PHOTOGRAPH RECEIVED)' : '' }}
                         </span>
                     </div>
 
@@ -245,27 +245,27 @@
                         <ol type="a">
                             <li>
                                 <span>Address Line 1</span>
-                                <span>{{ $detail['contact_info']['address1'] ?? 'N/A' }}</span>
+                                <span>{{  strtoupper($detail['contact_info']['address1'] ?? 'N/A') }}</span>
                             </li>
                             <li>
                                 <span>Address Line 2 (optional)</span>
-                                <span>{{ $detail['contact_info']['address2'] ?? 'N/A' }}</span>
+                                <span>{{  strtoupper($detail['contact_info']['address2'] ?? 'N/A') }}</span>
                             </li>
                             <li>
                                 <span>City/Town</span>
-                                <span>{{ $detail['contact_info']['mailing_city'] ?? 'N/A' }}</span>
+                                <span>{{  strtoupper($detail['contact_info']['mailing_city'] ?? 'N/A') }}</span>
                             </li>
                             <li>
                                 <span>District/Country/Province/State</span>
-                                <span>{{ $detail['contact_info']['mailing_city'] ?? 'N/A' }}</span>
+                                <span>{{  strtoupper($detail['contact_info']['mailing_city'] ?? 'N/A') }}</span>
                             </li>
                             <li>
                                 <span>Postal Code/Zip Code</span>
-                                <span>{{ $detail['contact_info']['mailing_postCode'] ?? 'N/A' }}</span>
+                                <span>{{  strtoupper($detail['contact_info']['mailing_postCode'] ?? 'N/A') }}</span>
                             </li>
                             <li>
                                 <span>Country</span>
-                                <span>{{ $detail['contact_info']['mailing_country'] ?? 'N/A' }}</span>
+                                <span>{{  strtoupper($detail['contact_info']['mailing_country'] ?? 'N/A') }}</span>
                             </li>
                         </ol>
                     </div>
@@ -273,17 +273,17 @@
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">9. Country Where You Live Today</span>
                         <span
-                            class="singleData">{{ $detail['eligibility_status']['residence_country'] ?? 'N/A' }}</span>
+                            class="singleData">{{  strtoupper($detail['eligibility_status']['residence_country'] ?? 'N/A') }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">10. Phone Number</span>
-                        <span class="singleData">{{ $detail['contact_info']['phone'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{  strtoupper($detail['contact_info']['phone'] ?? 'N/A') }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">11. E-mail Address</span>
-                        <span class="singleData">{{ $detail['contact_info']['email'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{  strtoupper($detail['contact_info']['email'] ?? 'N/A') }}</span>
                         <span class="singleData">(NOTE: This E-mail address will be used to provide you with
                             additional information if you are selected.)</span>
                     </div>
@@ -291,7 +291,7 @@
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">12. What is the highest level of education you have achieved, as of
                             today?</span>
-                        <span class="singleData">{{ $detail['education_level'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{  strtoupper($detail['education_level'] ?? 'N/A') }}</span>
                         <span class="singleData">You must have a minimum of a high school diploma reflecting the
                             completion of a full course of study (vocation schools or equivalency degrees are not
                             acceptable) or be a skilled worker in an occupation that requires at least two years of
@@ -301,7 +301,7 @@
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">13. What is your current marital status?</span>
-                        <span class="singleData">{{ $detail['spouse_info']['maritalStatus'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{  strtoupper($detail['spouse_info']['maritalStatus'] ?? 'N/A') }}</span>
                         <span class="singleData">Legal separation is an arrangement when a couple remains married but
                             live apart, following a court order. If you and your spouse are legally separated, your
                             spouse will not be able to immigrate with you through the Diversity Visa program. You will
@@ -316,7 +316,7 @@
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">14. Number of Children</span>
-                        <span class="singleData">{{ $detail['children_info'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{  strtoupper($detail['children_info'] ?? 'N/A') }}</span>
                         <span class="singleData">Children include all biological children, legally adopted children,
                             and stepchildren who are unmarried and under the age of 21 on the date you submit your
                             entry. You must include all eligible children, even if they do not live with you or if they
@@ -340,43 +340,43 @@
                         <ol>
                             <li>
                                 <span>Last / Family Name</span>
-                                <span>{{ $detail['SpouseDetail']['surname'] ?? 'N/A' }}</span>
+                                <span>{{  strtoupper($detail['SpouseDetail']['surname'] ?? 'N/A') }}</span>
                             </li>
                             <li>
                                 <span>First Name</span>
-                                <span>{{ $detail['SpouseDetail']['first_name'] ?? 'N/A' }}</span>
+                                <span>{{  strtoupper($detail['SpouseDetail']['first_name'] ?? 'N/A') }}</span>
                             </li>
                             <li>
                                 <span>Middle Name</span>
-                                <span>{{ $detail['SpouseDetail']['middle_name'] ?? 'N/A' }}</span>
+                                <span>{{  strtoupper($detail['SpouseDetail']['middle_name'] ?? 'N/A') }}</span>
                             </li>
                         </ol>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">13d. Spouse Gender</span>
-                        <span class="singleData">{{ $detail['SpouseDetail']['gender'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{  strtoupper($detail['SpouseDetail']['gender'] ?? 'N/A') }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">13e. Spouse Birth Date</span>
-                        <span class="singleData">{{ $detail['SpouseDetail']['birth_date'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{  strtoupper($detail['SpouseDetail']['birth_date'] ?? 'N/A') }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">13f. Spouse Birth City</span>
-                        <span class="singleData">{{ $detail['SpouseDetail']['city'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{  strtoupper($detail['SpouseDetail']['city'] ?? 'N/A') }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">13g. Spouse Birth Country</span>
-                        <span class="singleData">{{ $detail['SpouseDetail']['country'] ?? 'N/A' }}</span>
+                        <span class="singleData">{{  strtoupper($detail['SpouseDetail']['country'] ?? 'N/A') }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">13h. Spouse Photograph</span>
                         <span
-                            class="singleData">{{ isset($detail['photos']['spouse']) ? '(Photograph received)' : 'N/A' }}</span>
+                            class="singleData">{{ isset($detail['photos']['spouse']) ? '(PHOTOGRAPH RECEIVED)' : 'N/A' }}</span>
                     </div>
                    
                     @if (!empty($detail['ChildDetail']))
@@ -395,43 +395,43 @@
                                 <ol>
                                     <li>
                                         <span>Last / Family Name</span>
-                                        <span>{{ $child['surname'] ?? 'N/A' }}</span>
+                                        <span>{{  strtoupper($child['surname'] ?? 'N/A') }}</span>
                                     </li>
                                     <li>
                                         <span>First Name</span>
-                                        <span>{{ $child['first_name'] ?? 'N/A' }}</span>
+                                        <span>{{  strtoupper($child['first_name'] ?? 'N/A') }}</span>
                                     </li>
                                     <li>
                                         <span>Middle Name</span>
-                                        <span>{{ $child['middle_name'] ?? 'N/A' }}</span>
+                                        <span>{{  strtoupper($child['middle_name'] ?? 'N/A') }}</span>
                                     </li>
                                 </ol>
                             </div>
 
                             <div class="confirmationDataBlock no-page-break">
                                 <span class="heading">{{ $currentNumber}}d. Child Gender</span>
-                                <span class="singleData">{{ $child['gender'] ?? 'N/A' }}</span>
+                                <span class="singleData">{{  strtoupper($child['gender'] ?? 'N/A') }}</span>
                             </div>
 
                             <div class="confirmationDataBlock no-page-break">
                                 <span class="heading">{{ $currentNumber}}e. Child Birth Date</span>
-                                <span class="singleData">{{ $child['birth_date'] ?? 'N/A' }}</span>
+                                <span class="singleData">{{  strtoupper($child['birth_date'] ?? 'N/A') }}</span>
                             </div>
 
                             <div class="confirmationDataBlock no-page-break">
                                 <span class="heading">{{ $currentNumber}}f. Child Birth City</span>
-                                <span class="singleData">{{ $child['city'] ?? 'N/A' }}</span>
+                                <span class="singleData">{{  strtoupper($child['city'] ?? 'N/A') }}</span>
                             </div>
 
                             <div class="confirmationDataBlock no-page-break">
                                 <span class="heading">{{ $currentNumber}}g. Child Birth Country</span>
-                                <span class="singleData">{{ $child['country'] ?? 'N/A' }}</span>
+                                <span class="singleData">{{  strtoupper($child['country'] ?? 'N/A') }}</span>
                             </div>
 
                             <div class="confirmationDataBlock no-page-break">
                                 <span class="heading">{{ $currentNumber}}h. Child Photograph</span>
                                 <span class="singleData">
-                                    {{ isset($detail['children'][$index + 1]['photo']) ? '(Photograph received)' : 'N/A' }}
+                                    {{ isset($detail['children'][$index + 1]['photo']) ? '(PHOTOGRAPH RECEIVED)' : 'N/A' }}
                                 </span>
                             </div>
                         @endforeach
