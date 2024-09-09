@@ -86,7 +86,7 @@ class GetFormController extends Controller
     {
         try {
 
-            $status = FormStatus::where("applicant_detail_id", $id)->select('status')->first();
+            $status = FormStatus::where("applicant_detail_id", $id)->first();
 
             // Return a success response with the data
             return ApiResponse::success('Data retrieved successfully', $status);
