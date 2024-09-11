@@ -45,7 +45,7 @@ class DashboardController extends Controller
                 $query->whereYear('applicant_details.created_at', $year);
             }
             // Apply sorting
-            $validSortColumns = ['status', 'name', 'updated_at', 'id'];
+            $validSortColumns = ['status', 'name', 'updated_at', 'created_at'];
             if (in_array($sortBy, $validSortColumns)) {
                 if ($sortBy == 'name') {
                     $query->orderByRaw("JSON_EXTRACT(personal_info, '$.first_name') {$sortOrder}, JSON_EXTRACT(personal_info, '$.middle_name') {$sortOrder}, JSON_EXTRACT(personal_info, '$.last_name') {$sortOrder}");
@@ -56,7 +56,7 @@ class DashboardController extends Controller
                 }
             } else {
                 // Fallback to default sort by 'id'
-                $query->orderBy('id', $sortOrder);
+                $query->orderBy('created_at', $sortOrder);
             }
 
             // Get total count before pagination
@@ -258,6 +258,10 @@ class DashboardController extends Controller
                 $pdfFiles[] = $pdfFilePath;
             }
 
+            if (count($pdfFiles) === 1) {
+                return response()->download($pdfFiles[0])->deleteFileAfterSend(true);
+            }
+    
             $zipFileName = 'applicants_pdfs.zip';
             $zipFilePath = storage_path('app/public/' . $zipFileName);
 

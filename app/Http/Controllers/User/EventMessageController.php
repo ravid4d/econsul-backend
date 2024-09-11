@@ -13,19 +13,19 @@ class EventMessageController extends Controller
     {
         // Get the current year dynamically
         $currentYear = Carbon::now()->year;
-    
+        $nextYear = $currentYear + 1;
         // Define event messages with dynamic years
         $eventMessages = [
             [
-                'message' => "DV-$currentYear Start date:",
+                'message' => "DV-$nextYear Start date:",
                 'date' => Carbon::create($currentYear, 10, 4),
             ],
             [
-                'message' => "DV-$currentYear Deadline:",
+                'message' => "DV-$nextYear Deadline:",
                 'date' => Carbon::create($currentYear, 11, 7),
             ],
             [
-                'message' => "DV-" . ($currentYear + 1) . " Results:",
+                'message' => "DV-$nextYear Results:",
                 'date' => Carbon::create($currentYear + 1, 5, 4),
             ],
         ];
@@ -53,7 +53,7 @@ class EventMessageController extends Controller
                 $remainingDays = $today->diffInDays($event['date'], false);
     
                 return [
-                    'message' => round($remainingDays)."days left until " . $event['message'],
+                    'message' => $event['message'],
                     'remaining_days' => round($remainingDays), // Whole days only
                     'date' => $event['date'],
                 ];
