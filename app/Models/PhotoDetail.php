@@ -9,6 +9,6 @@ class PhotoDetail extends Model
 {
     use HasFactory;
 
-    protected $fillable = ["applicant_detail_id","photo_owner","ephoto_link","image_url","originalFileName"];
+    protected $fillable = ["applicant_detail_id","photo_owner","ephoto_link","image_url","originalFileName","photo_id"];
 
 }

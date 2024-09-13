@@ -130,8 +130,25 @@ class FormController extends Controller
             }
 
             if ($request->spouse['maritalStatus'] != "Married and my spouse is NOT a U.S. citizen or U.S. Lawful Permanent Resident (LPR)") {
-                $spouseDetail = SpouseDetail::where('applicant_detail_id', $request->application_id);
-                $spouseDetail->delete();
+                // Get the spouse detail instance
+                $spouseDetail = SpouseDetail::where('applicant_detail_id', $request->application_id)->first();
+            
+                // Check if the spouse detail exists
+                if ($spouseDetail) {
+                    // Check if the corresponding photo exists
+                    $photoDetail = PhotoDetail::where('photo_owner', 'spouse')
+                        ->where('applicant_detail_id', $spouseDetail->applicant_detail_id) // Access the property on the instance
+                        ->where('photo_id', $spouseDetail->id)
+                        ->first();
+            
+                    // If the photo exists, delete it
+                    if ($photoDetail) {
+                        $photoDetail->delete();
+                    }
+            
+                    // Delete the spouse detail
+                    $spouseDetail->delete();
+                }
             }
             // $userId = $request->user()->id;
             $userId = $request->user()->id;
@@ -157,18 +174,17 @@ class FormController extends Controller
             $childrenToDelete = $request->children; // Number of records to delete
             $childCount = ChildDetail::where('applicant_detail_id', $request->application_id)->count();
 
-            if ($childCount > $childrenToDelete ) {
-                $extraChildren = $childCount- $childrenToDelete;
+            if ($childCount > $childrenToDelete) {
+                $extraChildren = $childCount - $childrenToDelete;
                 $latestChildrenToDelete = ChildDetail::where('applicant_detail_id', $request->application_id)
                     ->orderBy('created_at', 'desc') // or 'id' if no 'created_at'
                     ->take($extraChildren) // Get the extra records that need to be deleted
                     ->get();
                 foreach ($latestChildrenToDelete as $child) {
+                    PhotoDetail::where('photo_id', $child->id)->where('applicant_detail_id ',$request->application_id)->delete();
                     $child->delete();
                 }
             }
-
-            
 
             $userId = $request->user()->id;
             ApplicantDetail::where('id', $request->application_id)->where('user_id', $userId)->update(['children_info' => $request->children]);
@@ -338,40 +354,94 @@ class FormController extends Controller
     //         return ApiResponse::error($e->getMessage());
     //     }
     // }
+
+
+
+
     public function photoUpdate(Request $request)
     {
         try {
-            // return $request->all();
+            // Validate the request
             $validator = Validator::make($request->all(), [
-                // 'application_id' => 'required|exists:applicant_details,id',
-                'photos' => 'required|array',
-                'photos.*.photo_owner' => 'required|string'
+                'application_id' => 'required|exists:applicant_details,id',
+                'photo_id' => 'required|string',
+                'photo_owner' => 'required|string',  // Ensure photo_owner is included in the request
+                'image' => [
+                    'nullable', // Allow for no image to be present
+                    'file',
+                    'mimes:jpeg', // Only JPEG images allowed
+                    'max:240', // Max file size of 240 KB (in kilobytes)
+                    function ($attribute, $value, $fail) {
+                        // Custom validation for image dimensions
+                        $image = $value;
+                        $imageSize = getimagesize($image->getPathname());
+
+                        if ($imageSize === false) {
+                            $fail('Unable to get image size.');
+                            return;
+                        }
+
+                        $width = $imageSize[0];
+                        $height = $imageSize[1];
+
+                        // Check if image is square
+                        if ($width !== $height) {
+                            $fail('The image must have square dimensions (width must equal height).');
+                            return;
+                        }
+
+                        // Check for minimum and maximum dimensions
+                        if ($width < 600 || $height < 600) {
+                            $fail('The image dimensions must be at least 600x600 pixels.');
+                        } elseif ($width > 1200 || $height > 1200) {
+                            $fail('The image dimensions must not exceed 1200x1200 pixels.');
+                        }
+                    }
+                ],
+                'ephoto_link' => 'nullable|string' // Optional ephoto_link
             ]);
 
             if ($validator->fails()) {
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
+
+            $originalFileName = null;
+            $imageUrl = null;
+
+            // Check if an image file is included in the request
             if ($request->hasFile('image')) {
                 $originalFileName = $request->file('image')->getClientOriginalName();
                 $imageUrl = $request->file('image')->store('photos', 'public');
             }
 
-            // Update or create the photo detail record
-            PhotoDetail::updateOrCreate(
-                [
-                    'applicant_detail_id' => $request->application_id,
-                    'photo_owner' => $request->photo_owner
-                ],
-                [
+            $photoDetail = PhotoDetail::where('photo_id', $request->photo_id)
+                ->where('photo_owner', $request->photo_owner)
+                ->first();
+// return $photoDetail;
+            if ($photoDetail) {
+                // If it exists, update the record
+                $photoDetail->update([
                     'ephoto_link' => $request->input('ephoto_link', null),
                     'image_url' => $imageUrl,
-                    'originalFileName' => $originalFileName
-                ]
-            );
-
-            return ApiResponse::success('Photo updated successfully!');
+                    'originalFileName' => $originalFileName,
+                ]);
+                return ApiResponse::success('Photo updated successfully!');
+            } else {
+                // If it doesn't exist, create a new record
+                PhotoDetail::create([
+                     // Manually set the photo_id from the request
+                    'applicant_detail_id' => $request->application_id,
+                    'photo_owner' => $request->photo_owner,
+                    'ephoto_link' => $request->input('ephoto_link', null),
+                    'image_url' => $imageUrl,
+                    'originalFileName' => $originalFileName,
+                    'photo_id' => $request->photo_id,
+                ]);
+                return ApiResponse::success('Photo created successfully!');
+            }
         } catch (\Exception $e) {
-            return ApiResponse::error($e->getMessage());
+            // Return a generic error message with exception details
+            return ApiResponse::error('An error occurred while updating the photo: ' . $e->getMessage());
         }
     }
     public function Submission(Request $request)
