@@ -18,6 +18,7 @@ class OtpService
 
 
             // Check if the request was successful
+            return $response->getBody();
             if ($response->successful()) {
                 // return [
                 //     'success' => true,

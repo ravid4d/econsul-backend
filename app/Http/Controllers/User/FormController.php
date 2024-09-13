@@ -18,15 +18,15 @@ class FormController extends Controller
                 'id' => 'nullable|exists:applicant_details,id', // Validate if 'id' exists if provided
                 'eligibility' => 'required|array',
             ]);
-    
+
             if ($validator->fails()) {
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
-    
+
             $userId = $request->user()->id; // Replace this with $request->user()->id if using authentication
-            
-           // Safely get the 'id' from request
-           
+
+            // Safely get the 'id' from request
+
             if ($request->input('id')) {
                 $id = $request->input('id');
                 // Update the existing record
@@ -41,8 +41,8 @@ class FormController extends Controller
                     'eligibility_status' => $request->eligibility
                 ]);
             }
-            
-         
+
+
             FormStatus::updateOrCreate(
                 ['applicant_detail_id' => $form->id],
                 ['status' => 'inprogress']
@@ -68,7 +68,7 @@ class FormController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
             // $userId = $request->user()->id;
-            $userId = $request->user()->id; 
+            $userId = $request->user()->id;
             ApplicantDetail::where('id', $request->application_id)->where('user_id', $userId)->update(['education_level' => $request->education]);
 
             return ApiResponse::success('Form Submitted Successfully!');
@@ -88,7 +88,7 @@ class FormController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
             // $userId = $request->user()->id;
-            $userId = $request->user()->id; 
+            $userId = $request->user()->id;
             ApplicantDetail::where('id', $request->application_id)->where('user_id', $userId)->update(['personal_info' => $request->personal]);
 
             return ApiResponse::success('Form Submitted Successfully!');
@@ -108,7 +108,7 @@ class FormController extends Controller
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
             // $userId = $request->user()->id;
-            $userId = $request->user()->id; 
+            $userId = $request->user()->id;
             ApplicantDetail::where('id', $request->application_id)->where('user_id', $userId)->update(['contact_info' => $request->contact]);
 
             return ApiResponse::success('Form Submitted Successfully!');
@@ -118,6 +118,7 @@ class FormController extends Controller
     }
     public function spouse_info(Request $request)
     {
+
         try {
             $validator = Validator::make($request->all(), [
                 "spouse" => "required|array",
@@ -127,8 +128,13 @@ class FormController extends Controller
             if ($validator->fails()) {
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
+
+            if ($request->spouse['maritalStatus'] != "Married and my spouse is NOT a U.S. citizen or U.S. Lawful Permanent Resident (LPR)") {
+                $spouseDetail = SpouseDetail::where('applicant_detail_id', $request->application_id);
+                $spouseDetail->delete();
+            }
             // $userId = $request->user()->id;
-            $userId = $request->user()->id; 
+            $userId = $request->user()->id;
             ApplicantDetail::where('id', $request->application_id)->where('user_id', $userId)->update(['spouse_info' => $request->spouse]);
 
             return ApiResponse::success('Form Submitted Successfully!');
@@ -138,7 +144,6 @@ class FormController extends Controller
     }
     public function children_info(Request $request)
     {
-        // return $request->all();
         try {
             $validator = Validator::make($request->all(), [
                 "children" => "required",
@@ -148,8 +153,24 @@ class FormController extends Controller
             if ($validator->fails()) {
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
-            // $userId = $request->user()->id;
-            $userId = $request->user()->id; 
+
+            $childrenToDelete = $request->children; // Number of records to delete
+            $childCount = ChildDetail::where('applicant_detail_id', $request->application_id)->count();
+
+            if ($childCount > $childrenToDelete ) {
+                $extraChildren = $childCount- $childrenToDelete;
+                $latestChildrenToDelete = ChildDetail::where('applicant_detail_id', $request->application_id)
+                    ->orderBy('created_at', 'desc') // or 'id' if no 'created_at'
+                    ->take($extraChildren) // Get the extra records that need to be deleted
+                    ->get();
+                foreach ($latestChildrenToDelete as $child) {
+                    $child->delete();
+                }
+            }
+
+            
+
+            $userId = $request->user()->id;
             ApplicantDetail::where('id', $request->application_id)->where('user_id', $userId)->update(['children_info' => $request->children]);
 
             return ApiResponse::success('Form Submitted Successfully!');
@@ -274,6 +295,49 @@ class FormController extends Controller
     //         return ApiResponse::error($e->getMessage());
     //     }
     // }
+    // public function photoUpdate(Request $request)
+    // {
+    //     try {
+    //         // return $request->all();
+    //         $validator = Validator::make($request->all(), [
+    //             // 'application_id' => 'required|exists:applicant_details,id',
+    //             'photos' => 'required|array',
+    //             'photos.*.photo_owner' => 'required|string'
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             return ApiResponse::error("Validation Error!", $validator->errors());
+    //         }
+
+    //         foreach ($request->photos as $index => $photo) {
+    //             $hasEphotoLink = array_key_exists('ephoto_link', $photo);
+    //             $hasImageUrl = $request->hasFile("photos.$index.image");
+    //             $originalFileName = null;
+    //             $imageUrl = null;
+    //             if ($hasImageUrl) {
+    //                 $originalFileName = $request->file("photos.$index.image")->getClientOriginalName();
+    //                 $imageUrl = $request->file("photos.$index.image")->store('photos', 'public');
+    //             }
+
+    //             // Update or create the photo detail record
+    //             PhotoDetail::updateOrCreate(
+    //                 [
+    //                     'applicant_detail_id' => $request->application_id,
+    //                     'photo_owner' => $photo['photo_owner']
+    //                 ],
+    //                 [
+    //                     'ephoto_link' => $hasEphotoLink ? $photo['ephoto_link'] : null,
+    //                     'image_url' => $imageUrl,
+    //                     'originalFileName' => $originalFileName
+    //                 ]
+    //             );
+    //         }
+
+    //         return ApiResponse::success('Photos updated successfully!');
+    //     } catch (\Exception $e) {
+    //         return ApiResponse::error($e->getMessage());
+    //     }
+    // }
     public function photoUpdate(Request $request)
     {
         try {
@@ -287,32 +351,25 @@ class FormController extends Controller
             if ($validator->fails()) {
                 return ApiResponse::error("Validation Error!", $validator->errors());
             }
-
-            foreach ($request->photos as $index => $photo) {
-                $hasEphotoLink = array_key_exists('ephoto_link', $photo);
-                $hasImageUrl = $request->hasFile("photos.$index.image");
-                $originalFileName = null;
-                $imageUrl = null;
-                if ($hasImageUrl) {
-                    $originalFileName = $request->file("photos.$index.image")->getClientOriginalName();
-                    $imageUrl = $request->file("photos.$index.image")->store('photos', 'public');
-                }
-
-                // Update or create the photo detail record
-                PhotoDetail::updateOrCreate(
-                    [
-                        'applicant_detail_id' => $request->application_id,
-                        'photo_owner' => $photo['photo_owner']
-                    ],
-                    [
-                        'ephoto_link' => $hasEphotoLink ? $photo['ephoto_link'] : null,
-                        'image_url' => $imageUrl,
-                        'originalFileName' => $originalFileName
-                    ]
-                );
+            if ($request->hasFile('image')) {
+                $originalFileName = $request->file('image')->getClientOriginalName();
+                $imageUrl = $request->file('image')->store('photos', 'public');
             }
 
-            return ApiResponse::success('Photos updated successfully!');
+            // Update or create the photo detail record
+            PhotoDetail::updateOrCreate(
+                [
+                    'applicant_detail_id' => $request->application_id,
+                    'photo_owner' => $request->photo_owner
+                ],
+                [
+                    'ephoto_link' => $request->input('ephoto_link', null),
+                    'image_url' => $imageUrl,
+                    'originalFileName' => $originalFileName
+                ]
+            );
+
+            return ApiResponse::success('Photo updated successfully!');
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
         }

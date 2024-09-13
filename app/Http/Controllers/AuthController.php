@@ -81,9 +81,10 @@ class AuthController extends Controller
             // $otp = '111111';
             $msg = "Your verification code is $otp. Use this code to complete your login. Do not share this code with anyone. The code will expire in 10 minutes.";
             $response = OtpService::sendOtp($mobileNumber, $msg);
+            
             // Check if OTP was sent successfully
             if ($response) {
-                // Store OTP and expiration time in the session or database
+                // Store OTP and expiration time in the session or database 
                 $user->otp_code = $otp;
                 $user->otp_expires_at = now()->addMinutes(10); // OTP expires in 10 minutes
                 $user->save();

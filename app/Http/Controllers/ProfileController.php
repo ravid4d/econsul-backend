@@ -139,6 +139,7 @@ class ProfileController extends Controller
     }
     public function sendMobileVerificationCode(Request $request)
     {
+     
         try {
             $validator = Validator::make($request->all(), [
                 'mobile_number' => 'required|unique:users,mobile_number'
