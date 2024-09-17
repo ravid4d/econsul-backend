@@ -181,7 +181,7 @@ class FormController extends Controller
                     ->take($extraChildren) // Get the extra records that need to be deleted
                     ->get();
                 foreach ($latestChildrenToDelete as $child) {
-                    PhotoDetail::where('photo_id', $child->id)->where('applicant_detail_id ',$request->application_id)->delete();
+                    PhotoDetail::where('photo_id', $child->id)->where('applicant_detail_id',$request->application_id)->delete();
                     $child->delete();
                 }
             }

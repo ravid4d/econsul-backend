@@ -35,9 +35,25 @@ class DashboardController extends Controller
             // Apply search filter if provided
             if ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('personal_info->first_name', 'LIKE', "%$search%")
-                        ->orWhere('personal_info->last_name', 'LIKE', "%$search%")
-                        ->orWhere('form_statuses.status', 'LIKE', "%$search%");
+                    // Split the search term by spaces to get potential first name and last name
+                    $searchTerms = explode(' ', $search);
+
+                    if (count($searchTerms) > 1) {
+                        // If two or more terms are provided, treat the first term as first name and the second as last name
+                        $firstName = $searchTerms[0];
+                        $lastName = $searchTerms[1];
+
+                        $q->where(function ($q2) use ($firstName, $lastName) {
+                            $q2->where('personal_info->first_name', 'LIKE', "%$firstName%")
+                                ->where('personal_info->last_name', 'LIKE', "%$lastName%");
+                        });
+                    } else {
+                        // If only one term is provided, search in both first and last name, and form_status status
+                        $q->where('personal_info->first_name', 'LIKE', "%$search%")
+                            ->orWhere('personal_info->last_name', 'LIKE', "%$search%");
+                    }
+                    $normalizedSearch = str_replace(' ', '', $search);
+                    $q->orWhereRaw('REPLACE(form_statuses.status, " ", "") LIKE ?', ["%$normalizedSearch%"]);
                 });
             }
 
@@ -115,13 +131,15 @@ class DashboardController extends Controller
     {
         try {
             $applicantDetail = ApplicantDetail::with('formPhoto', 'SpouseDetail', 'ChildDetail', 'formStatus')->find($id);
-            // return $applicantDetail->formStatus->status;
+            // return ['yes'=>$applicantDetail];
             // Check if the applicant detail exists
             if (!$applicantDetail) {
                 return response()->json(['message' => 'Applicant not found'], 404);
             }
 
             $nullKeys = [];
+            $hasChildPhotoMissing = false;
+
 
             // Check each property and add the key to the array if it is null
             if (is_null($applicantDetail->education_level)) {
@@ -141,9 +159,8 @@ class DashboardController extends Controller
             }
             if (!is_null($applicantDetail->spouse_info)) {
                 if (empty($applicantDetail->SpouseDetail)) {
-                    if($applicantDetail->spouse_info['maritalStatus'] == "Married and my spouse is NOT a U.S. citizen or U.S. Lawful Permanent Resident (LPR)")
-                    {
-                    $nullKeys[] = 'spouse-info';
+                    if ($applicantDetail->spouse_info['maritalStatus'] == "Married and my spouse is NOT a U.S. citizen or U.S. Lawful Permanent Resident (LPR)") {
+                        $nullKeys[] = 'spouse-info';
                     }
                 }
             }
@@ -159,11 +176,32 @@ class DashboardController extends Controller
                 }
             }
 
-            // Check if the main applicant has a photo
-            if ($applicantDetail->formPhoto->isEmpty()) {
+            $applicantPhoto = collect($applicantDetail['formPhoto'])->firstWhere('photo_owner', 'applicant');
+            // return ['ddd'=> $applicantPhoto];
+            if (!$applicantPhoto) {
                 $nullKeys[] = 'photo';
+            } else {
+                // Check for spouse's photo only if applicant photo is present
+                $spousePhoto = collect($applicantDetail['formPhoto'])->firstWhere('photo_owner', 'spouse');
+                if (!$spousePhoto) {
+                    $nullKeys[] = 'photo';
+                } else {
+                    // Check for children's photos based on the number of children
+                    if (isset($applicantDetail['children_info'])) {
+                        $childrenCount = $applicantDetail['children_info'];
+                        for ($i = 1; $i <= $childrenCount; $i++) {
+                            $childPhoto = collect($applicantDetail['formPhoto'])->firstWhere('photo_owner', 'child' . $i);
+                            if (!$childPhoto) {
+                                $hasChildPhotoMissing = true; // Flag if any child's photo is missing
+                            }
+                        }
+                        // If any child's photo is missing, set 'photo' key in nullKeys
+                        if ($hasChildPhotoMissing) {
+                            $nullKeys[] = 'photo';
+                        }
+                    }
+                }
             }
-
             if ($applicantDetail->formStatus->status == 'inprogress') {
                 $nullKeys[] = "submit-application";
             }
@@ -197,7 +235,7 @@ class DashboardController extends Controller
                 return ApiResponse::error('No IDs provided');
             }
 
-            $applicantDetails = ApplicantDetail::with('formStatus', 'SpouseDetail', 'formPhoto', 'ChildDetail')->whereIn('id',$ids)->get();
+            $applicantDetails = ApplicantDetail::with('formStatus', 'SpouseDetail', 'formPhoto', 'ChildDetail')->whereIn('id', $ids)->get();
             foreach ($applicantDetails as $applicant) {
                 $applicantPhotos = [
                     'applicant' => null,
@@ -261,7 +299,7 @@ class DashboardController extends Controller
             if (count($pdfFiles) === 1) {
                 return response()->download($pdfFiles[0])->deleteFileAfterSend(true);
             }
-    
+
             $zipFileName = 'applicants_pdfs.zip';
             $zipFilePath = storage_path('app/public/' . $zipFileName);
 
