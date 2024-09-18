@@ -132,7 +132,7 @@ class FormController extends Controller
             if ($request->spouse['maritalStatus'] != "Married and my spouse is NOT a U.S. citizen or U.S. Lawful Permanent Resident (LPR)") {
                 // Get the spouse detail instance
                 $spouseDetail = SpouseDetail::where('applicant_detail_id', $request->application_id)->first();
-            
+
                 // Check if the spouse detail exists
                 if ($spouseDetail) {
                     // Check if the corresponding photo exists
@@ -140,12 +140,12 @@ class FormController extends Controller
                         ->where('applicant_detail_id', $spouseDetail->applicant_detail_id) // Access the property on the instance
                         ->where('photo_id', $spouseDetail->id)
                         ->first();
-            
+
                     // If the photo exists, delete it
                     if ($photoDetail) {
                         $photoDetail->delete();
                     }
-            
+
                     // Delete the spouse detail
                     $spouseDetail->delete();
                 }
@@ -181,7 +181,7 @@ class FormController extends Controller
                     ->take($extraChildren) // Get the extra records that need to be deleted
                     ->get();
                 foreach ($latestChildrenToDelete as $child) {
-                    PhotoDetail::where('photo_id', $child->id)->where('applicant_detail_id',$request->application_id)->delete();
+                    PhotoDetail::where('photo_id', $child->id)->where('applicant_detail_id', $request->application_id)->delete();
                     $child->delete();
                 }
             }
@@ -372,29 +372,43 @@ class FormController extends Controller
                     'mimes:jpeg', // Only JPEG images allowed
                     'max:240', // Max file size of 240 KB (in kilobytes)
                     function ($attribute, $value, $fail) {
-                        // Custom validation for image dimensions
-                        $image = $value;
-                        $imageSize = getimagesize($image->getPathname());
+                        // Initialize error flag
+                        $errorMessage = '';
 
-                        if ($imageSize === false) {
-                            $fail('Unable to get image size.');
-                            return;
+                        // Check MIME type
+                        if ($value->getClientMimeType() !== 'image/jpeg') {
+                            $errorMessage = 'The image field must be a file of type: jpeg.';
                         }
 
-                        $width = $imageSize[0];
-                        $height = $imageSize[1];
-
-                        // Check if image is square
-                        if ($width !== $height) {
-                            $fail('The image must have square dimensions (width must equal height).');
-                            return;
+                        // Check file size
+                        if ($value->getSize() > 240 * 1024) { // Convert 240 KB to bytes
+                            $errorMessage = 'The image field must not be greater than 240 kilobytes.';
                         }
 
-                        // Check for minimum and maximum dimensions
-                        if ($width < 600 || $height < 600) {
-                            $fail('The image dimensions must be at least 600x600 pixels.');
-                        } elseif ($width > 1200 || $height > 1200) {
-                            $fail('The image dimensions must not exceed 1200x1200 pixels.');
+                        // Validate the image dimensions
+                        if (empty($errorMessage)) {
+                            $imageSize = getimagesize($value->getPathname());
+
+                            if ($imageSize === false) {
+                                $errorMessage = 'Unable to get image size.';
+                            } else {
+                                $width = $imageSize[0];
+                                $height = $imageSize[1];
+
+                                // Check if image is square
+                                if ($width !== $height) {
+                                    $errorMessage = 'The image must have square dimensions (width must equal height).';
+                                } elseif ($width < 600 || $height < 600) {
+                                    $errorMessage = 'The image dimensions must be at least 600x600 pixels.';
+                                } elseif ($width > 1200 || $height > 1200) {
+                                    $errorMessage = 'The image dimensions must not exceed 1200x1200 pixels.';
+                                }
+                            }
+                        }
+
+                        // Fail validation with the first encountered error
+                        if ($errorMessage) {
+                            $fail($errorMessage);
                         }
                     }
                 ],
@@ -417,7 +431,7 @@ class FormController extends Controller
             $photoDetail = PhotoDetail::where('photo_id', $request->photo_id)
                 ->where('photo_owner', $request->photo_owner)
                 ->first();
-// return $photoDetail;
+            // return $photoDetail;
             if ($photoDetail) {
                 // If it exists, update the record
                 $photoDetail->update([
@@ -429,7 +443,7 @@ class FormController extends Controller
             } else {
                 // If it doesn't exist, create a new record
                 PhotoDetail::create([
-                     // Manually set the photo_id from the request
+                    // Manually set the photo_id from the request
                     'applicant_detail_id' => $request->application_id,
                     'photo_owner' => $request->photo_owner,
                     'ephoto_link' => $request->input('ephoto_link', null),
