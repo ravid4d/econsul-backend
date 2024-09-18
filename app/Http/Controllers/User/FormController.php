@@ -373,31 +373,42 @@ class FormController extends Controller
                     'max:240', // Max file size of 240 KB (in kilobytes)
                     function ($attribute, $value, $fail) {
                         // Initialize error flag
-                        // Validate the image dimensions separately
-                        $image = $value;
-                        $imageSize = getimagesize($image->getPathname());
+                        $errorMessage = '';
 
-                        if ($imageSize === false) {
-                            $fail('Unable to get image size.');
-                            return;
+                        // Check MIME type
+                        if ($value->getClientMimeType() !== 'image/jpeg') {
+                            $errorMessage = 'The image field must be a file of type: jpeg.';
                         }
 
-                        $width = $imageSize[0];
-                        $height = $imageSize[1];
-
-                        // Check if image is square
-                        if ($width !== $height) {
-                            $fail('The image must have square dimensions (width must equal height).');
+                        // Check file size
+                        if ($value->getSize() > 240 * 1024) { // Convert 240 KB to bytes
+                            $errorMessage = 'The image field must not be greater than 240 kilobytes.';
                         }
 
-                        // Check for minimum dimensions
-                        if ($width < 600 || $height < 600) {
-                            $fail('The image dimensions must be at least 600x600 pixels.');
+                        // Validate the image dimensions
+                        if (empty($errorMessage)) {
+                            $imageSize = getimagesize($value->getPathname());
+
+                            if ($imageSize === false) {
+                                $errorMessage = 'Unable to get image size.';
+                            } else {
+                                $width = $imageSize[0];
+                                $height = $imageSize[1];
+
+                                // Check if image is square
+                                if ($width !== $height) {
+                                    $errorMessage = 'The image must have square dimensions (width must equal height).';
+                                } elseif ($width < 600 || $height < 600) {
+                                    $errorMessage = 'The image dimensions must be at least 600x600 pixels.';
+                                } elseif ($width > 1200 || $height > 1200) {
+                                    $errorMessage = 'The image dimensions must not exceed 1200x1200 pixels.';
+                                }
+                            }
                         }
 
-                        // Check for maximum dimensions
-                        if ($width > 1200 || $height > 1200) {
-                            $fail('The image dimensions must not exceed 1200x1200 pixels.');
+                        // Fail validation with the first encountered error
+                        if ($errorMessage) {
+                            $fail($errorMessage);
                         }
                     }
                 ],
