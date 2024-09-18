@@ -363,46 +363,43 @@ class FormController extends Controller
         try {
             // Validate the request
             $validator = Validator::make($request->all(), [
-                'application_id' => 'required|exists:applicant_details,id',
-                'photo_id' => 'required|string',
-                'photo_owner' => 'required|string',  // Ensure photo_owner is included in the request
                 'image' => [
                     'nullable', // Allow for no image to be present
                     'file',
                     'mimes:jpeg', // Only JPEG images allowed
                     'max:240', // Max file size of 240 KB (in kilobytes)
-                    function ($attribute, $value, $fail) {
-                        // Initialize error flag
-                        // Validate the image dimensions separately
-                        $image = $value;
-                        $imageSize = getimagesize($image->getPathname());
-
-                        if ($imageSize === false) {
-                            $fail('Unable to get image size.');
-                            return;
-                        }
-
-                        $width = $imageSize[0];
-                        $height = $imageSize[1];
-
-                        // Check if image is square
-                        if ($width !== $height) {
-                            $fail('The image must have square dimensions (width must equal height).');
-                        }
-
-                        // Check for minimum dimensions
-                        if ($width < 600 || $height < 600) {
-                            $fail('The image dimensions must be at least 600x600 pixels.');
-                        }
-
-                        // Check for maximum dimensions
-                        if ($width > 1200 || $height > 1200) {
-                            $fail('The image dimensions must not exceed 1200x1200 pixels.');
-                        }
-                    }
                 ],
-                'ephoto_link' => 'nullable|string' // Optional ephoto_link
             ]);
+
+            $validator->after(function ($validator) use ($request) {
+                $image = $request->file('image');
+
+                // Only run custom validation if the previous validation passes
+                if ($image && !$validator->fails()) {
+                    $imageSize = getimagesize($image->getPathname());
+
+                    if ($imageSize === false) {
+                        $validator->errors()->add('image', 'Unable to get image size.');
+                        return;
+                    }
+
+                    $width = $imageSize[0];
+                    $height = $imageSize[1];
+
+                    // Check if image is square
+                    if ($width !== $height) {
+                        $validator->errors()->add('image', 'The image must have square dimensions (width must equal height).');
+                        return;
+                    }
+
+                    // Check for minimum and maximum dimensions
+                    if ($width < 600 || $height < 600) {
+                        $validator->errors()->add('image', 'The image dimensions must be at least 600x600 pixels.');
+                    } elseif ($width > 1200 || $height > 1200) {
+                        $validator->errors()->add('image', 'The image dimensions must not exceed 1200x1200 pixels.');
+                    }
+                }
+            });
 
             if ($validator->fails()) {
                 return ApiResponse::error("Validation Error!", $validator->errors());
