@@ -20,7 +20,7 @@ class DashboardController extends Controller
         try {
             $page = $request->input('page', 1); // Default page is 1
             $limit = $request->input('limit', 10); // Default limit is 10 records per page
-            $search = $request->input('search'); // Search query
+            $search = strtoupper($request->input('search')); // Search query
             $sortBy = $request->input('sortBy', 'id'); // Default sort by column is 'id'
             $sortOrder = $request->input('sortOrder', 'asc'); // Default sort order is 'asc'
             $year = $request->input('year'); // Year filter
