@@ -22,7 +22,7 @@ class EventMessageController extends Controller
             ],
             [
                 'message' => "DV-$nextYear Deadline:",
-                'date' => Carbon::create($currentYear, 11, 7),
+                'date' => Carbon::create($currentYear, 11, 5),
             ],
             [
                 'message' => "DV-$nextYear Results:",

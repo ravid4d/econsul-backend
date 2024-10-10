@@ -234,7 +234,7 @@
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">6. Country of Eligibility for the DV Program</span>
                         <span
-                            class="singleData">{{ strtoupper($detail['eligibility_status']['live_country'] ?? 'N/A') }}</span>
+                            class="singleData">{{ strtoupper($detail['eligibility_status']['residence_country'] ?? 'N/A') }}</span>
                     </div>
 
                     {{-- Uncomment this block if needed --}}
@@ -253,15 +253,11 @@
                                 <span>{{ strtoupper($detail['contact_info']['address1'] ?? 'N/A') }}</span>
                             </li>
                             <li>
-                                <span>Address Line 2 (optional)</span>
+                                <span>District/Country/Province/State</span>
                                 <span>{{ strtoupper($detail['contact_info']['address2'] ?? 'N/A') }}</span>
                             </li>
                             <li>
                                 <span>City/Town</span>
-                                <span>{{ strtoupper($detail['contact_info']['mailing_city'] ?? 'N/A') }}</span>
-                            </li>
-                            <li>
-                                <span>District/Country/Province/State</span>
                                 <span>{{ strtoupper($detail['contact_info']['mailing_city'] ?? 'N/A') }}</span>
                             </li>
                             <li>
@@ -278,7 +274,7 @@
                     <div class="confirmationDataBlock no-page-break">
                         <span class="heading">9. Country Where You Live Today</span>
                         <span
-                            class="singleData">{{ strtoupper($detail['eligibility_status']['residence_country'] ?? 'N/A') }}</span>
+                            class="singleData">{{ strtoupper($detail['eligibility_status']['live_country'] ?? 'N/A') }}</span>
                     </div>
 
                     <div class="confirmationDataBlock no-page-break">
