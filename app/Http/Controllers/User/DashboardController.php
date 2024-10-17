@@ -184,7 +184,10 @@ class DashboardController extends Controller
                 // Check for spouse's photo only if applicant photo is present
                 $spousePhoto = collect($applicantDetail['formPhoto'])->firstWhere('photo_owner', 'spouse');
                 if (!$spousePhoto) {
+                    if($applicantDetail['spouse_info']['maritalStatus'] == "Married and my spouse is NOT a U.S. citizen or U.S. Lawful Permanent Resident (LPR)")
+                    {
                     $nullKeys[] = 'photo';
+                    }
                 } else {
                     // Check for children's photos based on the number of children
                     if (isset($applicantDetail['children_info'])) {
