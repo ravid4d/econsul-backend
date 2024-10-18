@@ -181,29 +181,31 @@ class DashboardController extends Controller
             if (!$applicantPhoto) {
                 $nullKeys[] = 'photo';
             } else {
-                // Check for spouse's photo only if applicant photo is present
-                $spousePhoto = collect($applicantDetail['formPhoto'])->firstWhere('photo_owner', 'spouse');
-                if (!$spousePhoto) {
-                    if($applicantDetail['spouse_info']['maritalStatus'] == "Married and my spouse is NOT a U.S. citizen or U.S. Lawful Permanent Resident (LPR)")
-                    {
-                    $nullKeys[] = 'photo';
-                    }
-                } else {
-                    // Check for children's photos based on the number of children
-                    if (isset($applicantDetail['children_info'])) {
-                        $childrenCount = $applicantDetail['children_info'];
-                        for ($i = 1; $i <= $childrenCount; $i++) {
-                            $childPhoto = collect($applicantDetail['formPhoto'])->firstWhere('photo_owner', 'child' . $i);
-                            if (!$childPhoto) {
-                                $hasChildPhotoMissing = true; // Flag if any child's photo is missing
-                            }
-                        }
-                        // If any child's photo is missing, set 'photo' key in nullKeys
-                        if ($hasChildPhotoMissing) {
+                if (isset($applicantDetail['spouse_info']['maritalStatus'])) {
+                    // Check for spouse's photo only if applicant photo is present
+                    $spousePhoto = collect($applicantDetail['formPhoto'])->firstWhere('photo_owner', 'spouse');
+                    if (!$spousePhoto) {
+                        if ($applicantDetail['spouse_info']['maritalStatus'] == "Married and my spouse is NOT a U.S. citizen or U.S. Lawful Permanent Resident (LPR)") {
                             $nullKeys[] = 'photo';
                         }
                     }
                 }
+                // Check for children's photos based on the number of children
+                // return ["photo"=>$applicantDetail['children_info']];
+                if (isset($applicantDetail['children_info']) && $applicantDetail['children_info'] !== "0") {
+                    $childrenCount = $applicantDetail['children_info'];
+                    for ($i = 1; $i <= $childrenCount; $i++) {
+                        $childPhoto = collect($applicantDetail['formPhoto'])->firstWhere('photo_owner', 'child' . $i);
+                        if (!$childPhoto) {
+                            $hasChildPhotoMissing = true; // Flag if any child's photo is missing
+                        }
+                    }
+                    // If any child's photo is missing, set 'photo' key in nullKeys
+                    if ($hasChildPhotoMissing) {
+                        $nullKeys[] = 'photo';
+                    }
+                }
+
             }
             if ($applicantDetail->formStatus->status == 'inprogress') {
                 $nullKeys[] = "submit-application";
