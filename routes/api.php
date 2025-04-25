@@ -82,3 +82,6 @@ Route::prefix('user')->middleware('auth:sanctum')->group(function () {
     //     ]);
     // });
 });
+Route::controller(App\Http\Controllers\User\EventMessageController::class)->group(function () {
+    Route::get('/event', 'getEventMessage'); 
+});
