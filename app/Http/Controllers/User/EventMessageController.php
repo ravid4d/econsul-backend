@@ -29,7 +29,7 @@ class EventMessageController extends Controller
             return [
                 'message' => "DV-$currentYear Lottery Results Date:",
                 'remaining_days' => round($remainingDays), // Whole days only
-                'date' => $resultDateCurrentYear->toFormattedDateString(),
+                'event_date' => $resultDateCurrentYear->toFormattedDateString(),
             ];
         } elseif ($currentDate->lt($startDate)) {
             $remainingDays = $currentDate->diffInDays($startDate, false);
@@ -37,7 +37,7 @@ class EventMessageController extends Controller
             return [
                 'message' => "DV-$nextYear Start date:",
                 'remaining_days' => round($remainingDays), // Whole days only
-                'date' => $startDate->toFormattedDateString(),
+                'event_date' => $startDate->toFormattedDateString(),
             ];
         } elseif ($currentDate->lt($endDate)) {
             // If the visit date is between start date and end date, show the deadline
@@ -46,7 +46,7 @@ class EventMessageController extends Controller
             return [
                 'message' => "DV-$nextYear Deadline:",
                 'remaining_days' => round($remainingDays), // Whole days only
-                'date' => $endDate->toFormattedDateString(),
+                'event_date' => $endDate->toFormattedDateString(),
             ];
         } else {
             $remainingDays = $currentDate->diffInDays($resultDateNextYear, false);
@@ -54,7 +54,7 @@ class EventMessageController extends Controller
             return [
                 'message' => "DV-$nextYear Lottery Results Date:",
                 'remaining_days' => round($remainingDays), // Whole days only
-                'date' => $resultDateNextYear->toFormattedDateString(),
+                'event_date' => $resultDateNextYear->toFormattedDateString(),
             ];
         }
     }
