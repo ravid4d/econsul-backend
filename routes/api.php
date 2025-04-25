@@ -74,11 +74,11 @@ Route::prefix('user')->middleware('auth:sanctum')->group(function () {
     Route::controller(App\Http\Controllers\User\EventMessageController::class)->group(function () {
         Route::get('/event', 'getEventMessage'); 
     });
-    // Route::get("/check", function () {
-    //     $database = DB::connection()->getDatabaseName();
-    //     return response()->json([
-    //         "database" => $database,
-    //         "Hello" => "world"
-    //     ]);
-    // });
+    Route::get("/check", function () {
+        $database = DB::connection()->getDatabaseName();
+        return response()->json([
+            "database" => $database,
+            "Hello" => "world"
+        ]);
+    });
 });
