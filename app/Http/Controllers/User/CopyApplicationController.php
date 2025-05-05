@@ -23,6 +23,7 @@ class CopyApplicationController extends Controller
                 foreach ($applicantDetails as $applicantDetail) {
                     // Copy the main applicant details
                     $newApplicantDetail = $applicantDetail->replicate();
+                    $newApplicantDetail->timestamps = false;
                     $newApplicantDetail->created_at = now();
                     $newApplicantDetail->updated_at = now();
                     $newApplicantDetail->save();
@@ -31,6 +32,9 @@ class CopyApplicationController extends Controller
                     if ($applicantDetail->formStatus) {
                         $newFormStatus = $applicantDetail->formStatus->replicate();
                         $newFormStatus->applicant_detail_id = $newApplicantDetail->id;
+                        $newFormStatus->timestamps = false;
+                        $newFormStatus->created_at = now();
+                        $newFormStatus->updated_at = now();
                         $newFormStatus->save();
                     }
                 
@@ -38,6 +42,9 @@ class CopyApplicationController extends Controller
                     if ($applicantDetail->SpouseDetail) {
                         $newSpouseDetail = $applicantDetail->SpouseDetail->replicate();
                         $newSpouseDetail->applicant_detail_id = $newApplicantDetail->id;
+                        $newSpouseDetail->timestamps = false;
+                        $newSpouseDetail->created_at = now();
+                        $newSpouseDetail->updated_at = now();
                         $newSpouseDetail->save();
                     }
                 
@@ -45,6 +52,9 @@ class CopyApplicationController extends Controller
                     foreach ($applicantDetail->ChildDetail as $childDetail) {
                         $newChildDetail = $childDetail->replicate();
                         $newChildDetail->applicant_detail_id = $newApplicantDetail->id;
+                        $newChildDetail->timestamps = false;
+                        $newChildDetail->created_at = now();
+                        $newChildDetail->updated_at = now();
                         $newChildDetail->save();
                     }
                 
@@ -52,6 +62,9 @@ class CopyApplicationController extends Controller
                     foreach ($applicantDetail->formPhoto as $photo) {
                         $newPhoto = $photo->replicate();
                         $newPhoto->applicant_detail_id = $newApplicantDetail->id;
+                        $newPhoto->timestamps = false;
+                        $newPhoto->created_at = now();
+                        $newPhoto->updated_at = now();
                         $newPhoto->save();
                     }
                 }
