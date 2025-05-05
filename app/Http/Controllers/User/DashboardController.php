@@ -114,10 +114,11 @@ class DashboardController extends Controller
             return ApiResponse::error($e->getMessage());
         }
     }
-    public function ApplicantYear()
+    public function ApplicantYear(Request $request)
     {
         try {
-            $years = ApplicantDetail::select(DB::raw('YEAR(created_at) as year'))
+            $userId = $request->user()->id;
+            $years = ApplicantDetail::select(DB::raw('YEAR(created_at) as year'))->where('user_id',$userId)
                 ->groupBy('year')
                 ->orderBy('year', 'desc')
                 ->pluck('year');
