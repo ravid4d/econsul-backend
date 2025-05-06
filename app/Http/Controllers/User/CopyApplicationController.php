@@ -23,54 +23,50 @@ class CopyApplicationController extends Controller
 
                 foreach ($applicantDetails as $applicantDetail) {
                     // Copy the main applicant details
-                    $newApplicantDetail = $applicantDetail->replicate()->toArray();
-                    $newApplicantDetail["created_at"] = now();
-                    $newApplicantDetail["updated_at"] = now();
-                    // $newApplicantDetail["save"(['tim]estamps' => false]);
-                    $newApplicantDetailId = DB::table('applicant_details')->insertGetId($newApplicantDetail);
+                    $newApplicantDetail = $applicantDetail->replicate();
+                    $newApplicantDetail->timestamps = false;
+                    $newApplicantDetail->created_at = now();
+                    $newApplicantDetail->updated_at = now();
+                    $newApplicantDetail->save(['timestamps' => false]);
                 
                     // Copy the related form status
                     if ($applicantDetail->formStatus) {
-                        $newFormStatus = $applicantDetail->formStatus->replicate()->toArray();
-                        $newFormStatus["applicant_detail_id"] = $newApplicantDetailId;
-                        // $newFormStatus->timestamps = false;
-                        $newFormStatus["created_at"] = now();
-                        $newFormStatus["updated_at"] = now();
-                        DB::table('form_statuses')->insert($newFormStatus);
-                        // $newFormStatus->save(['timestamps' => false]);
+                        $newFormStatus = $applicantDetail->formStatus->replicate();
+                        $newFormStatus->applicant_detail_id = $newApplicantDetail->id;
+                        $newFormStatus->timestamps = false;
+                        $newFormStatus->created_at = now();
+                        $newFormStatus->updated_at = now();
+                        $newFormStatus->save();
                     }
                 
                     // Copy the spouse details
                     if ($applicantDetail->SpouseDetail) {
-                        $newSpouseDetail = $applicantDetail->SpouseDetail->replicate()->toArray();
-                        $newSpouseDetail["applicant_detail_id"] = $newApplicantDetailId;
-                        // $newSpouseDetail->timestamps = false;
-                        $newSpouseDetail["created_at"] = now();
-                        $newSpouseDetail["updated_at"] = now();
-                        // $newSpouseDetail->save(['timestamps' => false]);
-                        DB::table('spouse_details')->insert($newSpouseDetail);
+                        $newSpouseDetail = $applicantDetail->SpouseDetail->replicate();
+                        $newSpouseDetail->applicant_detail_id = $newApplicantDetail->id;
+                        $newSpouseDetail->timestamps = false;
+                        $newSpouseDetail->created_at = now();
+                        $newSpouseDetail->updated_at = now();
+                        $newSpouseDetail->save();
                     }
                 
                     // Copy the child details
                     foreach ($applicantDetail->ChildDetail as $childDetail) {
-                        $newChildDetail = $childDetail->replicate()->toArray();
-                        $newChildDetail["applicant_detail_id"] = $newApplicantDetailId;
-                        // $newChildDetail->timestamps = false;
-                        $newChildDetail["created_at"] = now();
-                        $newChildDetail["updated_at"] = now();
-                        DB::table('child_details')->insert($newChildDetail);
-                        // $newChildDetail->save(['timestamps' => false]);
+                        $newChildDetail = $childDetail->replicate();
+                        $newChildDetail->applicant_detail_id = $newApplicantDetail->id;
+                        $newChildDetail->timestamps = false;
+                        $newChildDetail->created_at = now();
+                        $newChildDetail->updated_at = now();
+                        $newChildDetail->save();
                     }
                 
                     // Copy the form photos
                     foreach ($applicantDetail->formPhoto as $photo) {
-                        $newPhoto = $photo->replicate()->toArray();
-                        $newPhoto["applicant_detail_id"] = $newApplicantDetailId;
-                        // $newPhoto->timestamps = false;
-                        $newPhoto["created_at"] = now();
-                        $newPhoto["updated_at"] = now();
-                        // $newPhoto->save(['timestamps' => false]);
-                        DB::table('photo_details')->insert($newPhoto);
+                        $newPhoto = $photo->replicate();
+                        $newPhoto->applicant_detail_id = $newApplicantDetail->id;
+                        $newPhoto->timestamps = false;
+                        $newPhoto->created_at = now();
+                        $newPhoto->updated_at = now();
+                        $newPhoto->save();
                     }
                 }
 
