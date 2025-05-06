@@ -26,7 +26,7 @@ class CopyApplicationController extends Controller
                     $newApplicantDetail->timestamps = false;
                     $newApplicantDetail->created_at = now();
                     $newApplicantDetail->updated_at = now();
-                    $newApplicantDetail->save();
+                    $newApplicantDetail->save(['timestamps' => false]);
                 
                     // Copy the related form status
                     if ($applicantDetail->formStatus) {
@@ -35,7 +35,7 @@ class CopyApplicationController extends Controller
                         $newFormStatus->timestamps = false;
                         $newFormStatus->created_at = now();
                         $newFormStatus->updated_at = now();
-                        $newFormStatus->save();
+                        $newFormStatus->save(['timestamps' => false]);
                     }
                 
                     // Copy the spouse details
@@ -45,7 +45,7 @@ class CopyApplicationController extends Controller
                         $newSpouseDetail->timestamps = false;
                         $newSpouseDetail->created_at = now();
                         $newSpouseDetail->updated_at = now();
-                        $newSpouseDetail->save();
+                        $newSpouseDetail->save(['timestamps' => false]);
                     }
                 
                     // Copy the child details
@@ -55,7 +55,7 @@ class CopyApplicationController extends Controller
                         $newChildDetail->timestamps = false;
                         $newChildDetail->created_at = now();
                         $newChildDetail->updated_at = now();
-                        $newChildDetail->save();
+                        $newChildDetail->save(['timestamps' => false]);
                     }
                 
                     // Copy the form photos
@@ -65,7 +65,7 @@ class CopyApplicationController extends Controller
                         $newPhoto->timestamps = false;
                         $newPhoto->created_at = now();
                         $newPhoto->updated_at = now();
-                        $newPhoto->save();
+                        $newPhoto->save(['timestamps' => false]);
                     }
                 }
 
