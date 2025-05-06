@@ -12,11 +12,11 @@ use Illuminate\Support\Facades\DB;
 
 class CopyApplicationController extends Controller
 {
-    public function copyApplicant()
+    public function copyApplicant(Request $request)
     {
         try {
             $lastYear = Carbon::now()->subYear()->year;
-            $userId = "2";
+            $userId = $request->user()->id;
             // Retrieve all records from the previous year
             $applicantDetails = ApplicantDetail::with('formStatus','SpouseDetail','ChildDetail','formPhoto')->whereYear('created_at', $lastYear)
                 ->where('user_id', $userId)->get();
